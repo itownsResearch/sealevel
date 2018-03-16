@@ -1,0 +1,25 @@
+{
+  "name": "monproj",
+  "version": "1.0.0",
+  "description": "mon projet itowns avec webpack",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --mode development --progress",
+    "autobuild": "webpack --mode development --progress --watch",
+    "server": "webpack-dev-server --open --hot --inline"
+  },
+  "author": "MoiJeMoiJeMoiJe",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12",
+    "webpack-dev-server": "^3.1.1"
+  },
+  "dependencies": {
+    "itowns": "^2.3.0",
+    "proj4": "^2.4.4",
+    "three": "^0.89.0",
+    "three.meshline": "^1.0.3"
+  }
+}

@@ -1,0 +1,19 @@
+{
+    "type": "color",
+    "protocol": "wmtsc",
+    "networkOptions": { "crossOrigin" : "anonymous" },
+    "id": "local_shitty",
+    "customUrl": "../../result_3857/%TILEMATRIX/%COL/%ROW.png",
+    "options": {
+        "attribution": {
+            "name":"local bullshit",
+            "url": "http://www.openstreetmap.org/"
+        },
+        "tileMatrixSet": "PM",
+        "mimetype": "image/png"
+    },
+    "zoom" : {
+        "min": 9,
+        "max": 15
+    }
+}
