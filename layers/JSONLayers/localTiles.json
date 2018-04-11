@@ -7,7 +7,7 @@
     "options": {
         "attribution": {
             "name":"local bullshit",
-            "url": "http://www.openstreetmap.org/"
+            "url": "http://localhost/"
         },
         "tileMatrixSet": "PM",
         "mimetype": "image/png"
