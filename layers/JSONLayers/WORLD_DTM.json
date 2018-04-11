@@ -3,7 +3,7 @@
     "type":       "elevation",
     "protocol":   "wmts",
     "id":         "MNT_WORLD_SRTM3",
-    "url":        "http://wxs.ign.fr/va5orxd0pgzvq3jxutqfuy0b/geoportail/wmts",
+    "url":        "https://wxs.ign.fr/oej022d760omtb9y4b19bubh/geoportail/wmts",
     "noDataValue": -99999,
     "updateStrategy": {
         "type": 1,
