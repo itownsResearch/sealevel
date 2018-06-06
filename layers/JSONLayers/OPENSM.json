@@ -3,13 +3,13 @@
     "protocol": "wmtsc",
     "networkOptions": { "crossOrigin" : "anonymous" },
     "id": "OPENSM",
-    "customUrl": "http://osm.oslandia.io/styles/klokantech-basic/%TILEMATRIX/%COL/%ROW.png",
+    "url": "https://osm.oslandia.io/styles/klokantech-basic/%TILEMATRIX/%COL/%ROW.png",
+    "format": "image/png",
     "options": {
         "attribution": {
             "name":"OpenStreetMap",
             "url": "http://www.openstreetmap.org/"
         },
-        "tileMatrixSet": "PM",
-        "mimetype": "image/png"
+        "tileMatrixSet": "PM"
     }
 }

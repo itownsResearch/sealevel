@@ -3,13 +3,13 @@
     "protocol": "wmtsc",
 	"networkOptions": { "crossOrigin" : "anonymous" },
     "id": "DARK",
-    "customUrl": "http://a.basemaps.cartocdn.com/dark_all/%TILEMATRIX/%COL/%ROW.png",
+    "url": "https://a.basemaps.cartocdn.com/dark_all/%TILEMATRIX/%COL/%ROW.png",
+    "format": "image/png",
     "options": {
     	"attribution": {
     		"name":"CARTO",
     		"url": "https://carto.com/"
     	},
-        "tileMatrixSet": "PM",
-        "mimetype": "image/png"
+        "tileMatrixSet": "PM"
     }
 }

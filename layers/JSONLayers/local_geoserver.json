@@ -1,6 +1,6 @@
 {
     "type": "color",
-    "url"       : "http://localhost:8000/geoserver/test_wfs/wms",
+    "url"       : "https://localhost:8000/geoserver/test_wfs/wms",
     "networkOptions": {
         "crossOrigin": "anonymous"
     },
@@ -25,8 +25,8 @@
         "type": 0,
         "options": {}
     },
+    "format" : "image/png",
     "options": {
-        "mimetype"  : "image/png",
         "attribution" : {
             "name":"testoss",
             "url":"http://www.ign.fr/"

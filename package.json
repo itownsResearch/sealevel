@@ -1,16 +1,15 @@
 {
-  "name": "monproj",
+  "name": "itowns-quickstart",
   "version": "1.0.0",
-  "description": "mon projet itowns avec webpack",
+  "description": "Quickstart project for itowns",
   "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode development --progress",
-    "autobuild": "webpack --mode development --progress --watch",
-    "server": "webpack-dev-server --open --hot --inline"
+    "start": "webpack-dev-server -d --inline --hot"
   },
-  "author": "MoiJeMoiJeMoiJe",
-  "license": "ISC",
+  "author": "",
+  "license": "(CECILL-B OR MIT)",
   "devDependencies": {
     "webpack": "^4.1.1",
     "webpack-cli": "^2.0.12",
