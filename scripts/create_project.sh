@@ -60,8 +60,11 @@ echo " # Publish the gh-pages"
 cd ../master && COMMIT=`git rev-parse HEAD`
 # remove all current files but .gitignore
 cd ../gh-pages && git rm -qrf . && git checkout HEAD -- .gitignore
-# copy non-dev files from master to gh-pages directory
-cp -r ../master/* .
+# copy non-dev files from master to gh-pages directory, excluding node-modules for windows compatibility
+#cp -r ../master/* .
+cd ../master
+cp -r `ls ../master | grep -v "node_modules"` ../gh-pages
+cd ../gh-pages
 mkdir doc && cp -r ../itowns/out doc/itowns
 # commit and push all files
 git add --all && git commit -m "Publish from master ($COMMIT)" && git push origin gh-pages
@@ -75,7 +78,7 @@ chmod +x publish.sh
 
 echo " # You can sync your live demo website with master by running : cd $PROJECT/master && ./publish.sh"
 
-echo " # All done, you can run localy with : cd $PROJECT/master && npm run server"
+echo " # All done, you can run locally with : cd $PROJECT/master && npm run server"
 echo " # or open a browser to : https://$USER.github.io/$PROJECT"
 
 
