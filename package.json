@@ -3,14 +3,26 @@
   "version": "1.0.0",
   "description": "Quickstart project for itowns",
   "main": "src/main.js",
+  "gh-pages-deploy": {
+    "commit": "deploy",
+    "staticpath": "static",
+    "post": [
+      "build",
+      "clean-source"
+    ],
+    "noprompt": false
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode development --progress",
-    "start": "webpack-dev-server -d --inline --hot"
+    "start": "webpack-dev-server -d --inline --hot",
+    "deploy": "gh-pages-deploy",
+    "clean-source": "rimraf webpack.config.js src package.json package-lock.json static scripts"
   },
   "author": "",
   "license": "(CECILL-B OR MIT)",
   "devDependencies": {
+    "gh-pages-deploy": "git+https://github.com/mbredif/gh-pages-deploy.git",
     "webpack": "^4.1.1",
     "webpack-cli": "^2.0.12",
     "webpack-dev-server": "^3.1.1"
