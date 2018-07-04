@@ -40,4 +40,5 @@ npm run doc
 echo " # Build master"
 cd ../master && git checkout master
 npm install file:../itowns
+npm install
 npm run build
