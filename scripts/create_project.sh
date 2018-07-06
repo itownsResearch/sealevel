@@ -42,3 +42,4 @@ cd ../master && git checkout master
 npm install file:../itowns
 npm install
 npm run build
+git add . && git commit -m"package.json changed with local itowns" && git push origin master
