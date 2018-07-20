@@ -34,7 +34,8 @@ echo " # Build the itowns branch in a new directory : $PROJECT/itowns"
 git branch -D itowns
 git clone --single-branch -b itowns $ORIGIN ../itowns
 cd ../itowns && git checkout itowns
-npm install # calls "npm run build"
+# npm install # calls "npm run build" --> they changed the scripts in package.json
+npm install && npm run prepublishOnly # if not, we can't import the module correctly from itowns directory
 npm run doc
 
 echo " # Build master"
