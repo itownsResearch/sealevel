@@ -15,6 +15,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode development --progress",
+    "autobuild": "webpack --mode development --progress --watch",
     "start": "webpack-dev-server -d --inline --hot",
     "deploy": "gh-pages-deploy",
     "clean-source": "rimraf webpack.config.js src package.json package-lock.json static scripts"
@@ -23,8 +24,8 @@
   "license": "(CECILL-B OR MIT)",
   "devDependencies": {
     "gh-pages-deploy": "git+https://github.com/mbredif/gh-pages-deploy.git",
-    "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.12",
+    "webpack": "^4.23.1",
+    "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.1"
   },
   "dependencies": {

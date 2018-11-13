@@ -12,10 +12,11 @@ function modify_level(attribute, alt) {
     // const meshCoord3 = new itowns.Coordinates("EPSG:4326", -0.490, 44.798,  0 + alt).as("EPSG:4978").xyz();
     // const meshCoord4 = new itowns.Coordinates("EPSG:4326", -0.650, 44.798,  0 + alt).as("EPSG:4978").xyz();
 
-    const meshCoord1 = new itowns.Coordinates("EPSG:4326", coords.lon, coords.lat, 0 + alt).as("EPSG:4978").xyz();
-    const meshCoord2 = new itowns.Coordinates("EPSG:4326", coords.lon + coords.deltaLon, coords.lat, 0 + alt).as("EPSG:4978").xyz();
-    const meshCoord3 = new itowns.Coordinates("EPSG:4326", coords.lon + coords.deltaLon, coords.lat + coords.deltaLat,  0 + alt).as("EPSG:4978").xyz();
-    const meshCoord4 = new itowns.Coordinates("EPSG:4326", coords.lon, coords.lat  + coords.deltaLat, 0 + alt).as("EPSG:4978").xyz();
+    let mid = 4;
+    const meshCoord1 = new itowns.Coordinates("EPSG:4326", coords.lon, coords.lat, mid + alt).as("EPSG:4978").xyz();
+    const meshCoord2 = new itowns.Coordinates("EPSG:4326", coords.lon + coords.deltaLon, coords.lat, mid + alt).as("EPSG:4978").xyz();
+    const meshCoord3 = new itowns.Coordinates("EPSG:4326", coords.lon + coords.deltaLon, coords.lat + coords.deltaLat,  mid + alt).as("EPSG:4978").xyz();
+    const meshCoord4 = new itowns.Coordinates("EPSG:4326", coords.lon, coords.lat  + coords.deltaLat, mid + alt).as("EPSG:4978").xyz();
 
     attribute.setXYZ(0, meshCoord1.x, meshCoord1.y,  meshCoord1.z);
     attribute.setXYZ(1, meshCoord2.x, meshCoord2.y,  meshCoord2.z);
@@ -23,6 +24,8 @@ function modify_level(attribute, alt) {
     attribute.setXYZ(3, meshCoord3.x, meshCoord3.y,  meshCoord3.z);
     attribute.setXYZ(4, meshCoord4.x, meshCoord4.y,  meshCoord4.z);
     attribute.setXYZ(5, meshCoord1.x, meshCoord1.y,  meshCoord1.z);
+    console.log("and here too ", coords);
+    
   }
 
 function createWaterPlaneMesh(c) {

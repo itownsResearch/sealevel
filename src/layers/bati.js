@@ -115,7 +115,7 @@ let bati = {
     //     meshes.push(mesh);
     // },
     // filter: acceptFeature,
-    mergeFeatures: false,
+    //mergeFeatures: false,
     source: {
         url: 'http://wxs.ign.fr/oej022d760omtb9y4b19bubh/geoportail/wfs?',
         protocol: 'wfs',
