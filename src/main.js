@@ -5,7 +5,7 @@ import {createWaterPlaneMesh, modify_level} from './waterPlane'
 import IGN_MNT_HR from './layers/IGN_MNT_HIGHRES'
 import DARK from './layers/DARK'
 import {bati, shadMat, meshes} from './layers/bati'
-import roads from './layers/roads'
+//import roads from './layers/roads'
 import { getColor } from './layers/color'
 
 
@@ -43,7 +43,7 @@ const menuGlobe = new GuiTools('menuDiv', globeView)
 globeView.addLayer(DARK);
 globeView.addLayer(IGN_MNT_HR);
 globeView.addLayer(bati)
-globeView.addLayer(roads);
+//globeView.addLayer(roads);
 let plane = createWaterPlaneMesh(coords);
 
 
