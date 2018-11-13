@@ -161,7 +161,12 @@
                 update: itowns.FeatureProcessing.update,
                 convert: itowns.Feature2Mesh.convert({
                     color: colorBuildings,
-                    // batchId: (prop, id) => id,
+                    // batchId: (prop, id) => id, // works for all feature types
+                    attributes: { // works for extruded meshes only
+                        // color: { type: Uint8Array, value: colorBuildings, itemSize:3, normalized:true }, // does not work
+                        zbottom: { type: Float32Array, value: altitudeBuildings },
+                        id: { type: Uint32Array, value: (prop, id) => id }
+                    },
                     altitude: altitudeBuildings,
                     extrude: extrudeBuildings }),
                 onMeshCreated: function scaleZ(mesh) {

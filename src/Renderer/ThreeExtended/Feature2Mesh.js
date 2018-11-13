@@ -310,7 +310,13 @@ function featureToExtrudedPolygon(feature, options) {
 
     vertices.minAltitude = Infinity;
 
-    const batchIds = options.batchId ?  new Uint32Array(vertices.length / 3) : undefined;
+    const attributeNames = options.attributes ? Object.keys(options.attributes) : [];
+    for (const attributeName of attributeNames) {
+        const attribute = options.attributes[attributeName];
+        attribute.normalized = attribute.normalized || false;
+        attribute.itemSize = attribute.itemSize || 1;
+        attribute.array = new (attribute.type)(2 * totalVertices * attribute.itemSize);
+    }
     let FeatureId = 0;
 
     for (const geometry of feature.geometry) {
@@ -354,19 +360,37 @@ function featureToExtrudedPolygon(feature, options) {
                 isClockWise);
         }
 
-        if (batchIds) {
-            const id = options.batchId(geometry.properties, FeatureId);
-            for (let i = start; i < endTop; i++) {
-                batchIds[i] = id;
+        for (const attributeName of attributeNames) {
+            const attribute = options.attributes[attributeName];
+            const itemSize = attribute.itemSize;
+            const value = attribute.value(geometry.properties, FeatureId);
+            if (Array.isArray(value)) {
+                for (let i = itemSize * start; i < itemSize * endTop; i++) {
+                    attribute.array[i] = value[i % itemSize];
+                }
+            } else if (value.isColor) {
+                // fillColorArray(attribute.array, 2 * count, value, start);
+                value.multiplyScalar(255);
+                for (let i = start; i < endTop; i++) {
+                    value.toArray(attribute.array, i * itemSize);
+                }
+            } else {
+                for (let i = start; i < endTop; i++) {
+                    attribute.array[i] = value;
+                }
             }
-            FeatureId++;
         }
+        FeatureId++;
     }
 
     const geom = new THREE.BufferGeometry();
     geom.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
     geom.addAttribute('color', new THREE.BufferAttribute(colors, 3, true));
-    if (batchIds) { geom.addAttribute('batchId', new THREE.BufferAttribute(batchIds, 1)); }
+    for (const attributeName of attributeNames) {
+        const attribute = options.attributes[attributeName];
+        geom.addAttribute(attributeName, new THREE.BufferAttribute(attribute.array, attribute.itemSize, attribute.normalized));
+        console.log(attribute.array);
+    }
 
     geom.setIndex(new THREE.BufferAttribute(new Uint16Array(indices), 1));
 
@@ -453,6 +477,7 @@ export default {
      * @param {number|function} options.altitude - define the base altitude of the mesh
      * @param {number|function} options.extrude - if defined, polygons will be extruded by the specified amount
      * @param {object|function} options.color - define per feature color
+     * @param {Object} options.attributes - optional dictionnary of custom attributes. The key is the attribute name and the value is a function that takes the feature geometry and the feature index
      * @param {function} options.batchId - optional function to create batchId attribute. It is passed the feature property and the feature index
      * @return {function}
      */
