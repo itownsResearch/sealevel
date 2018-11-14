@@ -40,6 +40,7 @@ class TiledGeometryLayer extends GeometryLayer {
             enable: false,
             position: { x: -0.5, y: 0.0, z: 1.0 },
         };
+        this.displacementZ = 0;
 
         this.schemeTile = schemeTile;
         this.builder = builder;

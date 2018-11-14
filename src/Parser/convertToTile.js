@@ -76,6 +76,7 @@ export default {
 
         tile.material.setLightingOn(layer.lighting.enable);
         tile.material.uniforms.lightPosition.value = layer.lighting.position;
+        tile.material.uniforms.displacementZ.value = layer.displacementZ;
 
         if (layer.noTextureColor) {
             tile.material.uniforms.noTextureColor.value.copy(layer.noTextureColor);
