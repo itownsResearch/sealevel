@@ -25,17 +25,16 @@ function adjustAltitude(value) {
     globeView.water.geometry.attributes.position.needsUpdate = true;
     globeView.water.updateMatrixWorld();
 
-         var displacement = value;
-         //view.displacementZ = displacement;
-         globeView.setDisplacementZ(displacement);
-         //view.updateMaterialUniform('displacementZ', displacement);
-         globeView.notifyChange();
-         console.log(displacement);
+    // A.D Here we specify the Z displacement for the water
+    var displacement = value;
+    globeView.setDisplacementZ(displacement);
+    globeView.notifyChange();
+    console.log(displacement);
 
 }
 
 const viewerDiv = document.getElementById('viewerDiv');
-var options = {segments:128};
+let options = {segments:256}; // We specify a more refined tile geomtry than default 16*16
 const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
 const menuGlobe = new GuiTools('menuDiv', globeView)
 
@@ -53,8 +52,11 @@ let plane = createWaterPlaneMesh(coords);
 
 /*************************************** WATER A.D ***********************************************/
 // Here we create the Tile geometry for the water using a globe with specific vertex displacement
-var object3d = new THREE.Object3D();
+let  object3d = new THREE.Object3D();
 const globeWater = itowns.createGlobeLayer('globeWater', { object3d });
+globeWater.disableSkirt = true;
+// We can maybe specify a more refined geometry for the water using segments option
+// But as the we represent the water as flat (no wave, ellipsoid like) we can keep a light geomtry
 //globe2.noTextureColor = new itowns.THREE.Color(0xd0d5d8);
 
 // add globeWater to the view so it gets updated
