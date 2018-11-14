@@ -137,8 +137,8 @@ const LayeredMaterial = function LayeredMaterial(options) {
     this.uniforms.selected = new THREE.Uniform(false);
 
     this.uniforms.lightingEnabled = new THREE.Uniform(false);
-	
-	this.uniforms.displacementZ = new THREE.Uniform(0.);
+
+    this.uniforms.displacementZ = new THREE.Uniform(0.0);
 
     this.uniforms.noTextureColor = new THREE.Uniform(new THREE.Color(0.04, 0.23, 0.35));
 

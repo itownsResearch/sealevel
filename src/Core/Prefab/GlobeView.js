@@ -116,7 +116,7 @@ function GlobeView(viewerDiv, coordCarto, options = {}) {
     this.atmosphere.updateMatrixWorld(true);
 
     this.displacementZ = 0;
-	
+
     // Configure controls
     const positionTargetCamera = positionCamera.clone();
     positionTargetCamera.setAltitude(0);
@@ -295,12 +295,9 @@ GlobeView.prototype.setLightingPos = function setLightingPos(pos) {
 
 
 GlobeView.prototype.setDisplacementZ = function setDisplacementZ(v) {
-   
-    //this.displacementZ = v;
-   // this.tileLayer.displacementZ = v;
     this._layers[0].displacementZ = 0;
     this._layers[1].displacementZ = v;
-    //this.updateMaterialUniform('displacementZ', this.displacementZ);
+    // this.updateMaterialUniform('displacementZ', this.displacementZ);
     // We need to update uniforms for the specific layer of water, not all
     var uniformName = 'displacementZ';
     var value = v;
@@ -316,7 +313,6 @@ GlobeView.prototype.setDisplacementZ = function setDisplacementZ(v) {
     }
 
     this.notifyChange(this._layers[1]);
-    
 
     for (const n of this.tileLayer.level0Nodes) {
         n.traverse((obj) => {
@@ -328,7 +324,6 @@ GlobeView.prototype.setDisplacementZ = function setDisplacementZ(v) {
             }
         });
     }
-
 };
 
 GlobeView.prototype.updateMaterialUniform = function updateMaterialUniform(uniformName, value) {
