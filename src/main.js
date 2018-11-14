@@ -6,9 +6,11 @@ import * as THREE from 'three';  // We need THREE (no more exposed by itowns?)
 import IGN_MNT_HR from './layers/IGN_MNT_HIGHRES'
 import DARK from './layers/DARK'
 import Ortho from './layers/Ortho'
+
 import WORLD_DTM from './layers/WORLD_DTM'
 
 import {bati, shadMat, meshes} from './layers/bati'
+
 //import roads from './layers/roads'
 import { getColor } from './layers/color'
 
@@ -34,15 +36,20 @@ function adjustAltitude(value) {
 }
 
 const viewerDiv = document.getElementById('viewerDiv');
+
 let options = {segments:256}; // We specify a more refined tile geomtry than default 16*16
+
+const htmlInfo = document.getElementById('info');
+
+
 const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
 const menuGlobe = new GuiTools('menuDiv', globeView)
 
 globeView.addLayer(DARK);
 globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
-//globeView.addLayer(Ortho);
-globeView.addLayer(bati)
+globeView.addLayer(Ortho);
+globeView.addLayer(bati);
 //globeView.addLayer(roads);
 let plane = createWaterPlaneMesh(coords);
 
@@ -78,6 +85,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     
     menuGlobe.addImageryLayersGUI(globeView.getLayers( l => l.type === 'color'));
     menuGlobe.addGeometryLayersGUI(globeView.getLayers(l => l.type === 'geometry' && l.id != 'globe'));
+
     menuGlobe.gui.add({ waterLevel: 0.0 }, 'waterLevel').min(0).max(20).step(0.05).onChange((
         function updateWaterLevel(value) {
             //let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
@@ -88,4 +96,53 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             
             globeView.notifyChange(true);
         }));
+    window.addEventListener('mousemove', pickingGeomLayer, false);
+
 });
+
+
+function pickingGeomLayer(event) {
+    //console.log('resultoss ', resultoss);
+    
+    let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
+    const layer_is_visible = globeView.getLayers(l => l.id == 'WFS Buildings')[0].visible;
+    if (!layer_is_visible)
+        return;
+    let results = globeView.pickObjectsAt(event, 1, 'WFS Buildings');
+    //let results = lay.pickObjectsAt(globeView, event, 5);
+    if (results.length < 1){
+        console.log("no properties");
+        return;
+    }
+    //console.log("res length ", results[0]);
+    htmlInfo.innerHTML = 'Batiment';
+    htmlInfo.innerHTML += '<hr>';
+    let props = results[0].object.properties;
+    console.log(props);
+    
+    for (const k in props) {
+        // if (k === 'bbox' || k === 'geometry_name' || k === 'id' || k === 'id_parc' || k === 'imu_dir')
+        //     continue;
+        htmlInfo.innerHTML += '<li><b>' + k + ':</b> [' + props[k] + ']</li>';
+    }
+};
+
+// function pickingRaster(event) {
+//     let layer = globeView.getLayers(l => l.id == 'WFS Buildings rasterized')[0];
+//     if (layer.visible == false)
+//         return;
+//     let geocoord = globeView.controls.pickGeoPosition(globeView.eventToViewCoords(event));
+//     if (geocoord === undefined)
+//         return;
+//     let result = itowns.FeaturesUtils.filterFeaturesUnderCoordinate(geocoord, layer.feature, 5);
+//     htmlInfo.innerHTML = 'Parcelle';
+//     htmlInfo.innerHTML += '<hr>';
+//     if (result[0] !== undefined) {
+//         const props = result[0].feature.properties
+//         for (const k in props) {
+//             if (k === 'bbox' || k === 'geometry_name')
+//                 continue;
+//             htmlInfo.innerHTML += '<li>' + k + ': ' + props[k] + '</li>';
+//         }
+//     }
+// }
