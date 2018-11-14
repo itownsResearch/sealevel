@@ -37,6 +37,7 @@ function adjustAltitude(value) {
 }
 
 const viewerDiv = document.getElementById('viewerDiv');
+const htmlInfo = document.getElementById('info');
 
 var options = {segments:128};
 const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
@@ -45,8 +46,7 @@ const menuGlobe = new GuiTools('menuDiv', globeView)
 globeView.addLayer(DARK);
 globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
-//globeView.addLayer(Ortho);
-globeView.addLayer(bati_raster);
+globeView.addLayer(Ortho);
 globeView.addLayer(bati);
 //globeView.addLayer(roads);
 let plane = createWaterPlaneMesh(coords);
@@ -91,36 +91,36 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             
             globeView.notifyChange(true);
         }));
-    //window.addEventListener('mousemove', pickingRaster, false);
+    window.addEventListener('mousemove', pickingGeomLayer, false);
 
 });
 
 
-// function pickingGeomLayer(event) {
-//     console.log('resultoss ', resultoss);
+function pickingGeomLayer(event) {
+    //console.log('resultoss ', resultoss);
     
-//     let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
-//     const layer_is_visible = globeView.getLayers(l => l.id == 'WFS Buildings')[0].visible;
-//     if (!layer_is_visible)
-//         return;
-//     let results = globeView.pickObjectsAt(event, 1, 'WFS Buildings');
-//     //let results = lay.pickObjectsAt(globeView, event, 5);
-//     if (results.length < 1){
-//         console.log("no fucking properties");
-//         return;
-//     }
-//     console.log("res length ", results[0]);
-//     htmlInfo.innerHTML = 'Batiment';
-//     htmlInfo.innerHTML += '<hr>';
-//     let props = results[0].object.properties;
-//     console.log(props);
+    let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
+    const layer_is_visible = globeView.getLayers(l => l.id == 'WFS Buildings')[0].visible;
+    if (!layer_is_visible)
+        return;
+    let results = globeView.pickObjectsAt(event, 1, 'WFS Buildings');
+    //let results = lay.pickObjectsAt(globeView, event, 5);
+    if (results.length < 1){
+        console.log("no properties");
+        return;
+    }
+    //console.log("res length ", results[0]);
+    htmlInfo.innerHTML = 'Batiment';
+    htmlInfo.innerHTML += '<hr>';
+    let props = results[0].object.properties;
+    console.log(props);
     
-//     for (const k in props) {
-//         // if (k === 'bbox' || k === 'geometry_name' || k === 'id' || k === 'id_parc' || k === 'imu_dir')
-//         //     continue;
-//         htmlInfo.innerHTML += '<li><b>' + k + ':</b> [' + props[k] + ']</li>';
-//     }
-// };
+    for (const k in props) {
+        // if (k === 'bbox' || k === 'geometry_name' || k === 'id' || k === 'id_parc' || k === 'imu_dir')
+        //     continue;
+        htmlInfo.innerHTML += '<li><b>' + k + ':</b> [' + props[k] + ']</li>';
+    }
+};
 
 // function pickingRaster(event) {
 //     let layer = globeView.getLayers(l => l.id == 'WFS Buildings rasterized')[0];
