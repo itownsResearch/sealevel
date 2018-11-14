@@ -6,8 +6,6 @@ function createMaterial(vShader, fShader) {
     let uniforms = {
         time: {type: 'f', value: 0.2},
         waterLevel: {type: 'f', value: 0.0},
-        // green: {type: 'f', value: 0.1},
-        // blue: {type: 'f', value: 0.1},
         // resolution: {type: "v2", value: new THREE.Vector2()},
     };
     // uniforms.resolution.value.x = window.innerWidth;
@@ -18,7 +16,7 @@ function createMaterial(vShader, fShader) {
         vertexShader: vShader,
         fragmentShader: fShader,
         transparent: true,
-        opacity: 0.8,
+        opacity: 1.0,
         side: THREE.DoubleSide
     });
     return meshMaterial;
@@ -69,9 +67,12 @@ void main(){
 }
 `;
 
+let resultoss;
 let shadMat = createMaterial(vertexShader, fragmentShader);
 function addShader(result){
     result.material = shadMat; 
+    //console.log("result ", result)
+    resultoss = result;
     // let k = 0;
     // for (let i = 0 ; i < result.children.length; ++i){
     //     let mesh = result.children[i];
@@ -96,10 +97,14 @@ let colorForWater = getColorForLevelX(0);
 
 function colorBuildings(properties) {
     let altiBuilding = altitudeBuildings(properties);
+    //console.log(properties);
     return colorForWater(altiBuilding);
     //return getColor(altiBuilding, 5);
 }
 
+function  acceptFeature(p) {
+    return p.nature ==='Hôpital';
+}
 
 let bati = {
     id: 'WFS Buildings',
@@ -120,17 +125,18 @@ let bati = {
     //     mesh.scale.z = 0.01;
     //     meshes.push(mesh);
     // },
-    // filter: acceptFeature,
+    //filter: acceptFeature,
     //mergeFeatures: false,
     source: {
         url: 'http://wxs.ign.fr/oej022d760omtb9y4b19bubh/geoportail/wfs?',
         protocol: 'wfs',
         version: '2.0.0',
-        typeName: 'BDTOPO_BDD_WLD_WGS84G:bati_remarquable,BDTOPO_BDD_WLD_WGS84G:bati_indifferencie,BDTOPO_BDD_WLD_WGS84G:bati_industriel',
+        //typeName: 'BDTOPO_BDD_WLD_WGS84G:bati_remarquable,BDTOPO_BDD_WLD_WGS84G:bati_indifferencie,BDTOPO_BDD_WLD_WGS84G:bati_industriel',
+        typeName: 'BDTOPO_BDD_WLD_WGS84G:bati_indifferencie',
         projection: 'EPSG:4326',
         ipr: 'IGN',
         format: 'application/json',
-        zoom: { min: 14, max: 14 },
+        zoom: { min: 12, max: 12 },
         // extent: {
         //     west: 4.568,
         //     east: 5.18,
@@ -142,4 +148,4 @@ let bati = {
 
 
 // export default bati;
-export {bati, getColorForLevelX, colorForWater, shadMat};
+export {bati, getColorForLevelX, colorForWater, shadMat, resultoss};
