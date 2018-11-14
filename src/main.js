@@ -102,28 +102,31 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
 
 
 function pickingGeomLayer(event) {
-    //console.log('resultoss ', resultoss);
-    
-    let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
-    const layer_is_visible = globeView.getLayers(l => l.id == 'WFS Buildings')[0].visible;
-    if (!layer_is_visible)
-        return;
-    let results = globeView.pickObjectsAt(event, 1, 'WFS Buildings');
-    //let results = lay.pickObjectsAt(globeView, event, 5);
-    if (results.length < 1){
-        console.log("no properties");
-        return;
-    }
-    //console.log("res length ", results[0]);
-    htmlInfo.innerHTML = 'Batiment';
-    htmlInfo.innerHTML += '<hr>';
-    let props = results[0].object.properties;
-    console.log(props);
-    
-    for (const k in props) {
-        // if (k === 'bbox' || k === 'geometry_name' || k === 'id' || k === 'id_parc' || k === 'imu_dir')
-        //     continue;
-        htmlInfo.innerHTML += '<li><b>' + k + ':</b> [' + props[k] + ']</li>';
+
+    if(event.buttons === 0){
+        //console.log('resultoss ', resultoss);
+        
+        let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
+        const layer_is_visible = globeView.getLayers(l => l.id == 'WFS Buildings')[0].visible;
+        if (!layer_is_visible)
+            return;
+        let results = globeView.pickObjectsAt(event, 1, 'WFS Buildings');
+        //let results = lay.pickObjectsAt(globeView, event, 5);
+        if (results.length < 1){
+            console.log("no properties");
+            return;
+        }
+        //console.log("res length ", results[0]);
+        htmlInfo.innerHTML = 'Batiment';
+        htmlInfo.innerHTML += '<hr>';
+        let props = results[0].object.properties;
+        console.log(props);
+        
+        for (const k in props) {
+            // if (k === 'bbox' || k === 'geometry_name' || k === 'id' || k === 'id_parc' || k === 'imu_dir')
+            //     continue;
+            htmlInfo.innerHTML += '<li><b>' + k + ':</b> [' + props[k] + ']</li>';
+        }
     }
 };
 
