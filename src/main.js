@@ -37,7 +37,7 @@ function adjustAltitude(value) {
 
 const viewerDiv = document.getElementById('viewerDiv');
 
-let options = {segments:256}; // We specify a more refined tile geomtry than default 16*16
+let options = {segments:128}; // We specify a more refined tile geomtry than default 16*16
 
 const htmlInfo = document.getElementById('info');
 
