@@ -83,6 +83,7 @@ export function createGlobeLayer(id, options = {}) {
  * @param {object=} options - see {@link View}
  */
 function GlobeView(viewerDiv, coordCarto, options = {}) {
+
     THREE.Object3D.DefaultUp.set(0, 0, 1);
     // Setup View
     View.call(this, 'EPSG:4978', viewerDiv, options);
