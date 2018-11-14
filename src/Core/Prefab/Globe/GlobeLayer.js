@@ -63,6 +63,7 @@ class GlobeLayer extends TiledGeometryLayer {
         super(id, object3d || new THREE.Group(), schemeTile, builder, config);
 
         this.options.segments = this.segments;
+        this.disableSkirt = config.disableSkirt;
         this.options.defaultPickingRadius = 5;
         this.minSubdivisionLevel = this.minSubdivisionLevel || 2.0;
         this.maxSubdivisionLevel = this.maxSubdivisionLevel || 18.0;
