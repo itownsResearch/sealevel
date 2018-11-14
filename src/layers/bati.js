@@ -5,21 +5,20 @@ import { getColor } from './color';
 function createMaterial(vShader, fShader) {
     let uniforms = {
         time: {type: 'f', value: 0.2},
-        red: {type: 'f', value: 1.0},
-        green: {type: 'f', value: 0.2},
-        blue: {type: 'f', value: 0.2},
-        resolution: {type: "v2", value: new THREE.Vector2()},
+        waterLevel: {type: 'f', value: 0.0},
+        // green: {type: 'f', value: 0.1},
+        // blue: {type: 'f', value: 0.1},
+        // resolution: {type: "v2", value: new THREE.Vector2()},
     };
-
-    uniforms.resolution.value.x = window.innerWidth;
-    uniforms.resolution.value.y = window.innerHeight;
+    // uniforms.resolution.value.x = window.innerWidth;
+    // uniforms.resolution.value.y = window.innerHeight;
 
     let meshMaterial = new THREE.ShaderMaterial({
         uniforms: uniforms,
         vertexShader: vShader,
         fragmentShader: fShader,
         transparent: true,
-        opacity: 0.7,
+        opacity: 0.8,
         side: THREE.DoubleSide
     });
     return meshMaterial;
@@ -28,11 +27,12 @@ function createMaterial(vShader, fShader) {
 const vertexShader = `
 #include <logdepthbuf_pars_vertex>
 uniform float time;
-varying vec4 modelpos;
+attribute float zbottom;
+varying float zbot;
 
 void main(){
-    modelpos =  vec4(position, 1.0);
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    zbot = zbottom;
     #include <logdepthbuf_vertex>
 }
 `;
@@ -40,11 +40,8 @@ void main(){
 const fragmentShader = `
 #include <logdepthbuf_pars_fragment>
 uniform float time;
-uniform float red;
-uniform float green;
-uniform float blue;
-uniform vec2 resolution;
-varying vec4 modelpos;
+uniform float waterLevel;
+varying float zbot;
 
 #define PI 3.14159
 #define TWO_PI (PI*2.0)
@@ -52,31 +49,36 @@ varying vec4 modelpos;
 
 void main(){
     #include <logdepthbuf_fragment>
-    // vec2 center = (modelpos.xy);
-    gl_FragColor = vec4(red*1.0, green*1.0, blue*4.0, 1.0);
+    if (abs(zbot) > 1000.0){
+        gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+        return;
+    }
+    if (waterLevel - zbot > 3.0){
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        return;
+    }
+    else if (waterLevel - zbot > 2.0){
+        gl_FragColor = vec4(0.8, 0.5, 0.0, 1.0);
+        return;
+    }
+    else if (waterLevel - zbot > 0.0){
+        gl_FragColor = vec4(0.8, 0.7, 0.0, 1.0);
+        return;
+    }
+    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
 }
 `;
-let meshes = []
+
 let shadMat = createMaterial(vertexShader, fragmentShader);
 function addShader(result){
-    //meshes = [];
-    //let mesh;
     result.material = shadMat; 
-    let k = 0;
-    for (let i = 0 ; i < result.children.length; ++i){
-        let mesh = result.children[i];
-        //mesh.material = shadMat;
-        //console.log("el klodo --> ", mesh.minAltitude)
-        meshes.push(mesh);
-    }
-    console.log('m length : ', meshes.length);
-    
-    // for (let i = 0 ; i < result.feature.geometry.length ; ++i){
-    //     mesh = result.feature.geometry[i];
-    //     let z = mesh.properties.z_min;
-    //     shadMat.uniforms.time.value = z * 0.01;
-    // };
-    //console.log("el klodo --> ", result)
+    // let k = 0;
+    // for (let i = 0 ; i < result.children.length; ++i){
+    //     let mesh = result.children[i];
+    //     //mesh.material = shadMat;
+    //     //console.log("el klodo --> ", mesh.minAltitude)
+    //     meshes.push(mesh);
+    // }
 }
 
 function extrudeBuildings(properties) {
@@ -84,7 +86,6 @@ function extrudeBuildings(properties) {
 }
 
 function altitudeBuildings(properties) {
-    //console.log(properties);
     return properties.z_min - properties.hauteur;
 }
 
@@ -107,7 +108,12 @@ let bati = {
     convert: itowns.Feature2Mesh.convert({
         color: colorBuildings,
         altitude: altitudeBuildings,
-        extrude: extrudeBuildings
+        extrude: extrudeBuildings,
+        attributes: { // works for extruded meshes only
+            // color: { type: Uint8Array, value: colorBuildings, itemSize:3, normalized:true }, // does not work
+            zbottom: { type: Float32Array, value: altitudeBuildings },
+            id: { type: Uint32Array, value: (prop, id) => { return id } }
+        },
     }),
     onMeshCreated: addShader,
     // onMeshCreated: function scaleZ(mesh) {
@@ -136,4 +142,4 @@ let bati = {
 
 
 // export default bati;
-export {bati, getColorForLevelX, colorForWater, shadMat, meshes};
+export {bati, getColorForLevelX, colorForWater, shadMat};
