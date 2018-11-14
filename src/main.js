@@ -70,6 +70,7 @@ itowns.Fetcher.json('./layers/JSONLayers/OPENSM.json').then(function _(osm) {
 globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
    // globeView.scene.add(plane);
     globeView.water = plane;
+    globeView.controls.minDistance = 50;  // Allows the camera to get closer to the ground
     console.log('globe initialized ?', globeView);
     console.log(globeView.referenceCrs);
     
