@@ -115,7 +115,8 @@ function GlobeView(viewerDiv, coordCarto, options = {}) {
     tileLayer.object3d.add(this.atmosphere);
     this.atmosphere.updateMatrixWorld(true);
 
-
+    this.displacementZ = 0;
+	
     // Configure controls
     const positionTargetCamera = positionCamera.clone();
     positionTargetCamera.setAltitude(0);
@@ -290,6 +291,44 @@ GlobeView.prototype.setLightingPos = function setLightingPos(pos) {
 
     this.updateMaterialUniform('lightPosition', lightingPos.clone().normalize());
     this.notifyChange(this.tileLayer);
+};
+
+
+GlobeView.prototype.setDisplacementZ = function setDisplacementZ(v) {
+   
+    //this.displacementZ = v;
+   // this.tileLayer.displacementZ = v;
+    this._layers[0].displacementZ = 0;
+    this._layers[1].displacementZ = v;
+    //this.updateMaterialUniform('displacementZ', this.displacementZ);
+    // We need to update uniforms for the specific layer of water, not all
+    var uniformName = 'displacementZ';
+    var value = v;
+    for (const n of this._layers[1].level0Nodes) {
+        n.traverse((obj) => {
+            if (!obj.material || !obj.material.uniforms) {
+                return;
+            }
+            if (uniformName in obj.material.uniforms) {
+                obj.material.uniforms[uniformName].value = value;
+            }
+        });
+    }
+
+    this.notifyChange(this._layers[1]);
+    
+
+    for (const n of this.tileLayer.level0Nodes) {
+        n.traverse((obj) => {
+            if (!obj.material || !obj.material.uniforms) {
+                return;
+            }
+            if (uniformName in obj.material.uniforms) {
+                obj.material.uniforms[uniformName].value = 0;
+            }
+        });
+    }
+
 };
 
 GlobeView.prototype.updateMaterialUniform = function updateMaterialUniform(uniformName, value) {

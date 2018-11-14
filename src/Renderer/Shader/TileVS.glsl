@@ -14,6 +14,7 @@ attribute vec3      normal;
 uniform sampler2D   dTextures_00[1];
 uniform vec3        offsetScale_L00[1];
 uniform int         loadedTexturesCount[8];
+uniform float       displacementZ;
 
 uniform mat4        projectionMatrix;
 uniform mat4        modelViewMatrix;
@@ -68,9 +69,9 @@ void main() {
             #error Must define either RGBA_TEXTURE_ELEVATION, DATA_TEXTURE_ELEVATION or COLOR_TEXTURE_ELEVATION
             #endif
 
-            vPosition = vec4( position +  normal  * dv ,1.0 );
+            vPosition = vec4( position +  normal  * (displacementZ + dv) ,1.0 );
         } else {
-            vPosition = vec4( position ,1.0 );
+            vPosition = vec4( position + normal  * displacementZ ,1.0 );
         }
 
         vNormal = normalize ( mat3( modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz ) * normal );

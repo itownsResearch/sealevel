@@ -61,7 +61,8 @@ class GlobeLayer extends TiledGeometryLayer {
         const builder = new BuilderEllipsoidTile();
 
         super(id, object3d || new THREE.Group(), schemeTile, builder, config);
-
+		
+		this.options.segments = this.segments;
         this.options.defaultPickingRadius = 5;
         this.minSubdivisionLevel = this.minSubdivisionLevel || 2.0;
         this.maxSubdivisionLevel = this.maxSubdivisionLevel || 18.0;
