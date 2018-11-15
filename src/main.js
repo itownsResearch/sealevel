@@ -6,6 +6,7 @@ import binarySearch from './utils/search'
 import * as THREE from 'three';  // We need THREE (no more exposed by itowns?)
 
 import IGN_MNT_HR from './layers/IGN_MNT_HIGHRES'
+import IGN_MNT from './layers/IGN_MNT'
 import DARK from './layers/DARK'
 import Ortho from './layers/Ortho'
 
@@ -40,11 +41,12 @@ function adjustAltitude(value) {
 
 const viewerDiv = document.getElementById('viewerDiv');
 
-let options = {segments:128}; // We specify a more refined tile geomtry than default 16*16
+
 
 const htmlInfo = document.getElementById('info');
-
-
+// Options for segments in particular is not well handled
+// We modified some code in itowns and created an issue https://github.com/iTowns/itowns/issues/910
+let options = {segments:128}; // We specify a more refined tile geomtry than default 16*16
 const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
 const menuGlobe = new GuiTools('menuDiv', globeView)
 
@@ -59,19 +61,33 @@ let plane = createWaterPlaneMesh(coords);
 
 
 
-
+console.log(globeView);
 
 /*************************************** WATER A.D ***********************************************/
 // Here we create the Tile geometry for the water using a globe with specific vertex displacement
 let  object3d = new THREE.Object3D();
 const globeWater = itowns.createGlobeLayer('globeWater', { object3d });
 globeWater.disableSkirt = true;
+globeWater.opacity = 0.999; // So we can handle transparency check for nice shading
 // We can maybe specify a more refined geometry for the water using segments option
 // But as the we represent the water as flat (no wave, ellipsoid like) we can keep a light geomtry
-//globe2.noTextureColor = new itowns.THREE.Color(0xd0d5d8);
+// globe2.noTextureColor = new itowns.THREE.Color(0xd0d5d8);
 
 // add globeWater to the view so it gets updated
 itowns.View.prototype.addLayer.call(globeView, globeWater);
+//globeWater.addLayer(IGN_MNT_HR);
+//itowns.View.prototype.addLayer.call(globeView, IGN_MNT_HR, globeWater);
+
+// UGLY WAY. NEED TO REUSE IGN_MNT_HR  (TODO: check already used ID problem)
+// We give the water the information of the ground to make some rendering
+// using water height and other stuff
+// DONE, we change the ID, it should use the itowns cache so we share the data between globe and water
+IGN_MNT_HR.id = 'HR_DTM_forWater';
+itowns.View.prototype.addLayer.call(globeView, IGN_MNT_HR, globeWater);
+// itowns.Fetcher.json('src/layers/IGN_MNT_HIGHRES.json').then(function _(worldDTM) {
+//     worldDTM.id = 'toto';
+//     itowns.View.prototype.addLayer.call(globeView, worldDTM, globeWater);
+// });
 /*
 itowns.Fetcher.json('./layers/JSONLayers/OPENSM.json').then(function _(osm) {
     itowns.View.prototype.addLayer.call(globeView, osm, globeWater);
