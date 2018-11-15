@@ -64,7 +64,7 @@ console.log(globeView);
 /*************************************** WATER A.D ***********************************************/
 // Here we create the Tile geometry for the water using a globe with specific vertex displacement
 let  object3d = new THREE.Object3D();
-const globeWater = itowns.createGlobeLayer('globeWater', { object3d });
+const globeWater = itowns.createGlobeLayer('globeWater', { object3d }, {options:{segments:2}} );
 globeWater.disableSkirt = true;
 globeWater.opacity = 0.999; // So we can handle transparency check for nice shading
 // We can maybe specify a more refined geometry for the water using segments option
@@ -104,7 +104,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     menuGlobe.addImageryLayersGUI(globeView.getLayers( l => l.type === 'color'));
     menuGlobe.addGeometryLayersGUI(globeView.getLayers(l => l.type === 'geometry' && l.id != 'globe'));
 
-    menuGlobe.gui.add({ waterLevel: 0.0 }, 'waterLevel').min(0).max(20).step(0.05).onChange((
+    menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(20).step(0.05).onChange((
         function updateWaterLevel(value) {
             //let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
             //console.log('lay', lay);
@@ -114,6 +114,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             
             globeView.notifyChange(true);
         }));
+        adjustAltitude(0.1);
     window.addEventListener('mousemove', picking, false);
 
 });
