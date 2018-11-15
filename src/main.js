@@ -1,6 +1,8 @@
 import * as itowns from 'itowns'
 import GuiTools from './gui/GuiTools'
 import {createWaterPlaneMesh, modify_level} from './waterPlane'
+import binarySearch from './utils/search'
+
 import * as THREE from 'three';  // We need THREE (no more exposed by itowns?)
 
 import IGN_MNT_HR from './layers/IGN_MNT_HIGHRES'
@@ -96,39 +98,66 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             
             globeView.notifyChange(true);
         }));
-    window.addEventListener('mousemove', pickingGeomLayer, false);
+    window.addEventListener('mousemove', picking, false);
 
 });
 
 
-function pickingGeomLayer(event) {
+// from itowns examples, can't say I really understand what is going on...
+function picking(event) {
+    if(globeView.controls.isPaused()) {
+        var htmlInfo = document.getElementById('info');
+        var intersects = globeView.pickObjectsAt(event, 3, 'WFS Buildings');
+        var properties;
+        var info;
+        htmlInfo.innerHTML = ' ';
+        if (intersects.length) {
+            var geometry = intersects[0].object.feature.geometry;
+            var idPt = (intersects[0].face.a) % (intersects[0].object.feature.vertices.length / 3);
+            var id = binarySearch(geometry, idPt);
+            properties = geometry[id].properties;
 
-    if(event.buttons === 0){
-        //console.log('resultoss ', resultoss);
-        
-        let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
-        const layer_is_visible = globeView.getLayers(l => l.id == 'WFS Buildings')[0].visible;
-        if (!layer_is_visible)
-            return;
-        let results = globeView.pickObjectsAt(event, 1, 'WFS Buildings');
-        //let results = lay.pickObjectsAt(globeView, event, 5);
-        if (results.length < 1){
-            console.log("no properties");
-            return;
-        }
-        //console.log("res length ", results[0]);
-        htmlInfo.innerHTML = 'Batiment';
-        htmlInfo.innerHTML += '<hr>';
-        let props = results[0].object.properties;
-        console.log(props);
-        
-        for (const k in props) {
-            // if (k === 'bbox' || k === 'geometry_name' || k === 'id' || k === 'id_parc' || k === 'imu_dir')
-            //     continue;
-            htmlInfo.innerHTML += '<li><b>' + k + ':</b> [' + props[k] + ']</li>';
+            Object.keys(properties).map(function (objectKey) {
+                var value = properties[objectKey];
+                var key = objectKey.toString();
+                if (key[0] !== '_' && key !== 'geometry_name') {
+                    info = value.toString();
+                    htmlInfo.innerHTML +='<li><b>' + key + ': </b>' + info + '</li>';
+                    console.log('geom ', geometry[id]);                    
+                }
+            });
         }
     }
-};
+}
+
+// function pickingGeomLayer(event) {
+
+//     if(event.buttons === 0){
+//         //console.log('resultoss ', resultoss);
+        
+//         let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
+//         const layer_is_visible = globeView.getLayers(l => l.id == 'WFS Buildings')[0].visible;
+//         if (!layer_is_visible)
+//             return;
+//         let results = globeView.pickObjectsAt(event, 1, 'WFS Buildings');
+//         //let results = lay.pickObjectsAt(globeView, event, 5);
+//         if (results.length < 1){
+//             console.log("no properties");
+//             return;
+//         }
+//         //console.log("res length ", results[0]);
+//         htmlInfo.innerHTML = 'Batiment';
+//         htmlInfo.innerHTML += '<hr>';
+//         let props = results[0].object.properties;
+//         console.log(props);
+        
+//         for (const k in props) {
+//             // if (k === 'bbox' || k === 'geometry_name' || k === 'id' || k === 'id_parc' || k === 'imu_dir')
+//             //     continue;
+//             htmlInfo.innerHTML += '<li><b>' + k + ':</b> [' + props[k] + ']</li>';
+//         }
+//     }
+// };
 
 // function pickingRaster(event) {
 //     let layer = globeView.getLayers(l => l.id == 'WFS Buildings rasterized')[0];
