@@ -40,11 +40,12 @@ function adjustAltitude(value) {
 
 const viewerDiv = document.getElementById('viewerDiv');
 
-let options = {segments:128}; // We specify a more refined tile geomtry than default 16*16
+
 
 const htmlInfo = document.getElementById('info');
-
-
+// Options for segments in particular is not well handled
+// We modified some code in itowns and created an issue https://github.com/iTowns/itowns/issues/910
+let options = {segments:128}; // We specify a more refined tile geomtry than default 16*16
 const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
 const menuGlobe = new GuiTools('menuDiv', globeView)
 
