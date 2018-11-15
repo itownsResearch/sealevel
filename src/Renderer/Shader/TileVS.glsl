@@ -24,6 +24,7 @@ varying vec2        vUv_WGS84;
 varying float       vUv_PM;
 varying vec3        vNormal;
 varying vec4        pos;
+varying float       waterHeight;
 
 highp float decode32(highp vec4 rgba) {
     highp float Sign = 1.0 - step(128.0,rgba[0])*2.0;
@@ -69,6 +70,8 @@ void main() {
             #error Must define either RGBA_TEXTURE_ELEVATION, DATA_TEXTURE_ELEVATION or COLOR_TEXTURE_ELEVATION
             #endif
 
+            waterHeight = displacementZ - dv;
+            if(displacementZ > 0.) dv = 0.;   // If displacement means we draw water so no dtm added
             vPosition = vec4( position +  normal  * (displacementZ + dv) ,1.0 );
         } else {
             vPosition = vec4( position + normal  * displacementZ ,1.0 );
