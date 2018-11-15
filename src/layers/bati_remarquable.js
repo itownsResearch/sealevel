@@ -52,34 +52,24 @@ void main(){
         return;
     }
     if (waterLevel - zbot > 3.0){
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
         return;
     }
     else if (waterLevel - zbot > 2.0){
-        gl_FragColor = vec4(0.8, 0.5, 0.0, 1.0);
+        gl_FragColor = vec4(1.0, 0.2, 0.1, 1.0);
         return;
     }
     else if (waterLevel - zbot > 0.0){
         gl_FragColor = vec4(0.8, 0.7, 0.0, 1.0);
         return;
     }
-    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+    gl_FragColor = vec4(0.3, 0.3, 0.5, 1.0);
 }
 `;
 
-let resultoss;
-let shadMat = createMaterial(vertexShader, fragmentShader);
+let shadMatRem = createMaterial(vertexShader, fragmentShader);
 function addShader(result){
-    result.material = shadMat; 
-    //console.log("result ", result)
-    resultoss = result;
-    // let k = 0;
-    // for (let i = 0 ; i < result.children.length; ++i){
-    //     let mesh = result.children[i];
-    //     //mesh.material = shadMat;
-    //     //console.log("el klodo --> ", mesh.minAltitude)
-    //     meshes.push(mesh);
-    // }
+    result.material = shadMatRem; 
 }
 
 function extrudeBuildings(properties) {
@@ -106,12 +96,12 @@ function  acceptFeature(p) {
     return p.z_min !== 9999;
 }
 
-let bati = {
-    id: 'WFS Buildings',
+let batiRem = {
+    id: 'WFS Buildings Remarquable',
     type: 'geometry',
     update: itowns.FeatureProcessing.update,
     convert: itowns.Feature2Mesh.convert({
-        color: colorBuildings,
+        //color: colorBuildings,
         altitude: altitudeBuildings,
         extrude: extrudeBuildings,
         attributes: { // works for extruded meshes only
@@ -132,11 +122,11 @@ let bati = {
         protocol: 'wfs',
         version: '2.0.0',
         //typeName: 'BDTOPO_BDD_WLD_WGS84G:bati_remarquable,BDTOPO_BDD_WLD_WGS84G:bati_indifferencie,BDTOPO_BDD_WLD_WGS84G:bati_industriel',
-        typeName: 'BDTOPO_BDD_WLD_WGS84G:bati_indifferencie,BDTOPO_BDD_WLD_WGS84G:bati_industriel',
+        typeName: 'BDTOPO_BDD_WLD_WGS84G:bati_remarquable',
         projection: 'EPSG:4326',
         ipr: 'IGN',
         format: 'application/json',
-        zoom: { min: 14, max: 14 },
+        zoom: { min: 12, max: 12 },
         // extent: {
         //     west: 4.568,
         //     east: 5.18,
@@ -148,4 +138,4 @@ let bati = {
 
 
 // export default bati;
-export {bati, getColorForLevelX, colorForWater, shadMat, resultoss};
+export {batiRem, shadMatRem};
