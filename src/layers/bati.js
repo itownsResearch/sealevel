@@ -16,7 +16,7 @@ function createMaterial(vShader, fShader) {
         vertexShader: vShader,
         fragmentShader: fShader,
         transparent: true,
-        opacity: 1.0,
+        opacity: 0.5,
         side: THREE.DoubleSide
     });
     return meshMaterial;

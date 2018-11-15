@@ -34,3 +34,7 @@ body { margin: 0; overflow:hidden; height:100%}
         display: none;
     }
 }
+
+.beware {
+    color: red;
+}
