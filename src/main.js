@@ -12,10 +12,11 @@ import Ortho from './layers/Ortho'
 
 import WORLD_DTM from './layers/WORLD_DTM'
 
-import {bati, shadMat, meshes} from './layers/bati'
+import {bati, shadMat} from './layers/bati'
+import {batiRem, shadMatRem} from './layers/bati_remarquable'
 
 //import roads from './layers/roads'
-import { getColor } from './layers/color'
+//import { getColor } from './layers/color'
 
 
 // around Bordeaux
@@ -52,8 +53,9 @@ const menuGlobe = new GuiTools('menuDiv', globeView)
 globeView.addLayer(DARK);
 globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
-globeView.addLayer(Ortho);
+//globeView.addLayer(Ortho);
 globeView.addLayer(bati);
+globeView.addLayer(batiRem);
 //globeView.addLayer(roads);
 let plane = createWaterPlaneMesh(coords);
 
@@ -111,6 +113,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             
             adjustAltitude(value);
             shadMat.uniforms.waterLevel.value = value;
+            shadMatRem.uniforms.waterLevel.value = value;
             
             globeView.notifyChange(true);
         }));
@@ -124,12 +127,13 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
 function picking(event) {
     if(globeView.controls.isPaused()) {
         var htmlInfo = document.getElementById('info');
-        var intersects = globeView.pickObjectsAt(event, 3, 'WFS Buildings');
+        var intersects = globeView.pickObjectsAt(event, 3, 'WFS Buildings Remarquable');
         var properties;
         var info;
         htmlInfo.innerHTML = ' ';
         if (intersects.length) {
             var geometry = intersects[0].object.feature.geometry;
+            console.log(intersects[0].object.feature);
             var idPt = (intersects[0].face.a) % (intersects[0].object.feature.vertices.length / 3);
             var id = binarySearch(geometry, idPt);
             properties = geometry[id].properties;
@@ -140,7 +144,7 @@ function picking(event) {
                 if (key[0] !== '_' && key !== 'geometry_name') {
                     info = value.toString();
                     htmlInfo.innerHTML +='<li><b>' + key + ': </b>' + info + '</li>';
-                    console.log('geom ', geometry[id]);                    
+                    //console.log('geom ', geometry[id]);                    
                 }
             });
         }
