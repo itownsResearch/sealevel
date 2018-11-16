@@ -52,7 +52,22 @@ globeView.addLayer(IGN_MNT_HR);
 //globeView.addLayer(bati);
 globeView.addLayer(batiRem);
 
-
+// globeView.addLayer({
+//     type: 'color',
+//     id: 'shom',
+//     name: 'shom',
+//     transparent: true,
+//     style: {
+//         //fill: 'orange',
+//         fillOpacity: 0.5,
+//         stroke: 'white',
+//     },
+//     source: {
+//         url: '../data/lignes_niveau_shom_4326.geojson',
+//         protocol: 'file',
+//         projection: 'EPSG:4326',
+//     },
+// });
 
 
 
