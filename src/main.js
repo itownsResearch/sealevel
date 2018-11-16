@@ -45,10 +45,10 @@ let options = { segments: 128 }; // We specify a more refined tile geomtry than 
 const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
 const menuGlobe = new GuiTools('menuDiv', globeView)
 
+globeView.addLayer(Ortho);
 globeView.addLayer(DARK);
 globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
-//globeView.addLayer(Ortho);
 //globeView.addLayer(bati);
 globeView.addLayer(batiRem);
 
@@ -76,7 +76,8 @@ console.log(globeView);
 /*************************************** WATER A.D ***********************************************/
 // Here we create the Tile geometry for the water using a globe with specific vertex displacement
 let object3d = new THREE.Object3D();
-const globeWater = itowns.createGlobeLayer('globeWater', { object3d }, { options: { segments: 2 } });
+let segments = 128;
+const globeWater = itowns.createGlobeLayer('globeWater', { object3d, segments});
 globeWater.disableSkirt = true;
 globeWater.opacity = 0.999; // So we can handle transparency check for nice shading
 // We can maybe specify a more refined geometry for the water using segments option
@@ -94,6 +95,8 @@ itowns.View.prototype.addLayer.call(globeView, globeWater);
 // DONE, we change the ID, it should use the itowns cache so we share the data between globe and water
 IGN_MNT_HR.id = 'HR_DTM_forWater';
 itowns.View.prototype.addLayer.call(globeView, IGN_MNT_HR, globeWater);
+// Ortho.id = 'Ortho_forWater';
+// itowns.View.prototype.addLayer.call(globeView, Ortho, globeWater);
 // itowns.Fetcher.json('src/layers/IGN_MNT_HIGHRES.json').then(function _(worldDTM) {
 //     worldDTM.id = 'toto';
 //     itowns.View.prototype.addLayer.call(globeView, worldDTM, globeWater);
@@ -114,7 +117,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     menuGlobe.addGeometryLayersGUI(globeView.getLayers(l => l.type === 'geometry' && l.id != 'globe'));
 
     let flagLine = false;
-    menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(20).step(0.05).onChange((
+    menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(6).step(0.04).onChange((
         function updateWaterLevel(value) {
             //let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
             //console.log('lay', lay);
