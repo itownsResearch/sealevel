@@ -6,8 +6,8 @@ function createLine(first, second, name){
     let segmentCount = 100;
     //let radius = firstpos.distanceTo(secondpos);
 
-    let material = new THREE.LineDashedMaterial({ color: 0x00ff00, linewidth: 3, dashSize: 50, gapSize: 80 });
-    let k = 200;
+    let material = new THREE.LineDashedMaterial({ color: 0xacab00, linewidth: 3, dashSize: 50, gapSize: 80 });
+    let k = 512;
     let v = new THREE.Vector3(1, 0, -(secondpos.x - firstpos.x)/(secondpos.z - firstpos.z));
     v = v.multiplyScalar(k);
     let p1 = new THREE.Vector3(firstpos.x + 1*(secondpos.x - firstpos.x)/8, firstpos.y + 1*(secondpos.y - firstpos.y)/8, firstpos.z + 1*(secondpos.z - firstpos.z)/8);

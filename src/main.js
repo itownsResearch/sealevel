@@ -49,28 +49,59 @@ globeView.addLayer(Ortho);
 globeView.addLayer(DARK);
 globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
-globeView.addLayer(bati);
+//globeView.addLayer(bati);
 globeView.addLayer(batiRem);
 
-// globeView.addLayer({
-//     type: 'color',
-//     id: 'shom',
-//     name: 'shom',
-//     transparent: true,
-//     style: {
-//         //fill: 'orange',
-//         fillOpacity: 0.5,
-//         stroke: 'white',
-//     },
-//     source: {
-//         url: '../data/lignes_niveau_shom_4326.geojson',
-//         protocol: 'file',
-//         projection: 'EPSG:4326',
-//     },
-// });
+globeView.addLayer({
+    type: 'color',
+    id: 'iso_1',
+    name: 'iso_1',
+    transparent: true,
+    style: {
+        //fill: 'orange',
+        fillOpacity: 0.5,
+        stroke: 'yellow',
+    },
+    source: {
+        url: '../data/iso_alti_1.geojson',
+        protocol: 'file',
+        projection: 'EPSG:4326',
+    },
+});
 
+globeView.addLayer({
+    type: 'color',
+    id: 'iso_5',
+    name: 'iso_1',
+    transparent: true,
+    style: {
+        //fill: 'orange',
+        fillOpacity: 0.5,
+        stroke: 'red',
+        'stroke-width': 0.2
+    },
+    source: {
+        url: '../data/iso_alti_5.geojson',
+        protocol: 'file',
+        projection: 'EPSG:4326',
+    },
+});
 
+// let isos = new itowns.GeometryLayer('isos', new THREE.Group());
+// isos.update = itowns.FeatureProcessing.update;
+// isos.convert = itowns.Feature2Mesh.convert({
+//     color: new THREE.Color(0xffffff),
+//     });
 
+// isos.source = {
+//     url: '../data/iso_alti_0.geojson',
+//     protocol: 'file',
+//     projection: 'EPSG:4326',
+//     format: 'application/json',
+//     zoom: { min: 12, max: 12 },
+// };
+
+// globeView.addLayer(isos);
 console.log(globeView);
 
 /*************************************** WATER A.D ***********************************************/
