@@ -6,7 +6,7 @@ function createLine(first, second, name){
     let segmentCount = 100;
     //let radius = firstpos.distanceTo(secondpos);
 
-    let material = new THREE.LineDashedMaterial({ color: 0x00ffbb, linewidth: 2, gapSize: 300 });
+    let material = new THREE.LineDashedMaterial({ color: 0x00ff00, linewidth: 3, dashSize: 50, gapSize: 80 });
     let k = 200;
     let v = new THREE.Vector3(1, 0, -(secondpos.x - firstpos.x)/(secondpos.z - firstpos.z));
     v = v.multiplyScalar(k);
@@ -27,14 +27,15 @@ function createLine(first, second, name){
     // console.log(p1);
     // console.log(p2);
     // console.log(secondpos);
-    //let curve = new THREE.QuadraticBezierCurve3(firstpos, mid, secondpos);
+    //curve = new THREE.QuadraticBezierCurve3(firstpos, mid, secondpos);
     
     let points = curve.getPoints(segmentCount);
     let geometry = new THREE.Geometry().setFromPoints(points);
-    geometry.computeLineDistances();
+    //geometry.computeLineDistances();
 
     
     let line = new THREE.Line(geometry, material);
+    line.computeLineDistances();
     line.name = name;
     line.updateMatrixWorld();
     return line;
