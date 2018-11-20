@@ -47,6 +47,8 @@ varying float zbot;
 
 void main(){
     #include <logdepthbuf_fragment>
+    // gl_FragColor = vec4(1.-fract(zbot), 0.0, fract(zbot), 1.0);
+    // return;
     if (abs(zbot) > 1000.0){
         gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
         return;

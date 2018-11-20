@@ -49,7 +49,7 @@ globeView.addLayer(Ortho);
 globeView.addLayer(DARK);
 globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
-//globeView.addLayer(bati);
+globeView.addLayer(bati);
 globeView.addLayer(batiRem);
 
 globeView.addLayer({
@@ -196,7 +196,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
 function picking(event) {
     if (globeView.controls.isPaused()) {
         var htmlInfo = document.getElementById('info');
-        var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings Remarquable');
+        var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings');
         var properties;
         var info;
         htmlInfo.innerHTML = ' ';
