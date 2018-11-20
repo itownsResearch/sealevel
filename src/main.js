@@ -35,6 +35,14 @@ function adjustAltitude(value) {
 
 }
 
+// Set water representation mode in shaders 
+function setMode(value){
+
+    var v = parseInt(value);
+    globeView.updateMaterialUniformMode(v);
+    globeView.notifyChange();
+}
+
 const viewerDiv = document.getElementById('viewerDiv');
 
 
@@ -190,6 +198,13 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             globeView.notifyChange(true);
 
         }));
+
+        menuGlobe.gui.add({ mode: 0 }, 'mode').min(0).max(3).step(1).onChange((
+            function updateWaterMode(value) {
+                setMode(value);
+            }
+        ));
+
     adjustAltitude(0.1);
     animateLines();
     window.addEventListener('mousemove', picking, false);
