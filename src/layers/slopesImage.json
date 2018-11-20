@@ -1,0 +1,110 @@
+{
+    "type": "color",
+    "id":   "slopesImage",
+    "source": {
+        "protocol":   "wmts",
+        "url": "http://wxs.ign.fr/26dcr6vqzm087mll4z3y2kt2/geoportail/wmts",
+        "networkOptions": {
+            "crossOrigin": "anonymous"
+        },
+        "format": "image/png",
+        "attribution" : {
+            "name":"IGN",
+            "url":"http://www.ign.fr/"
+        },
+        "name": "ELEVATION.SLOPES.HIGHRES",
+        "tileMatrixSet": "PM",
+        "tileMatrixSetLimits": {
+            "6": {
+                "minTileRow": 23,
+                "maxTileRow": 23,
+                "minTileCol": 33,
+                "maxTileCol": 33
+            },
+            "7": {
+                "minTileRow": 46,
+                "maxTileRow": 47,
+                "minTileCol": 66,
+                "maxTileCol": 66
+            },
+            "8": {
+                "minTileRow": 93,
+                "maxTileRow": 94,
+                "minTileCol": 132,
+                "maxTileCol": 132
+            },
+            "9": {
+                "minTileRow": 187,
+                "maxTileRow": 188,
+                "minTileCol": 264,
+                "maxTileCol": 264
+            },
+            "10": {
+                "minTileRow": 31,
+                "maxTileRow": 1024,
+                "minTileCol": 0,
+                "maxTileCol": 1024
+            },
+            "11": {
+                "minTileRow": 62,
+                "maxTileRow": 2048,
+                "minTileCol": 0,
+                "maxTileCol": 2048
+            },
+            "12": {
+                "minTileRow": 125,
+                "maxTileRow": 4096,
+                "minTileCol": 0,
+                "maxTileCol": 4096
+            },
+            "13": {
+                "minTileRow": 2739,
+                "maxTileRow": 4628,
+                "minTileCol": 41,
+                "maxTileCol": 7917
+            },
+            "14": {
+                "minTileRow": 5478,
+                "maxTileRow": 9256,
+                "minTileCol": 82,
+                "maxTileCol": 15835
+            },
+            "15": {
+                "minTileRow": 10956,
+                "maxTileRow": 18513,
+                "minTileCol": 165,
+                "maxTileCol": 31670
+            },
+            "16": {
+                "minTileRow": 21912,
+                "maxTileRow": 37026,
+                "minTileCol": 330,
+                "maxTileCol": 63341
+            },
+            "17": {
+                "minTileRow": 43825,
+                "maxTileRow": 74052,
+                "minTileCol": 660,
+                "maxTileCol": 126683
+            },
+            "18": {
+                "minTileRow": 87651,
+                "maxTileRow": 148105,
+                "minTileCol": 1320,
+                "maxTileCol": 253366
+            },
+            "19": {
+                "minTileRow": 175302,
+                "maxTileRow": 294060,
+                "minTileCol": 170159,
+                "maxTileCol": 343473
+            },
+            "20": {
+                "minTileRow": 376733,
+                "maxTileRow": 384679,
+                "minTileCol": 530773,
+                "maxTileCol": 540914
+            }
+        }
+    }
+}

@@ -11,6 +11,7 @@ import IGN_MNT_HR from './layers/IGN_MNT_HIGHRES'
 import IGN_MNT from './layers/IGN_MNT'
 import DARK from './layers/DARK'
 import Ortho from './layers/Ortho'
+import Slopes from './layers/slopesImage'
 
 import WORLD_DTM from './layers/WORLD_DTM'
 
@@ -46,6 +47,7 @@ const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
 const menuGlobe = new GuiTools('menuDiv', globeView)
 
 globeView.addLayer(Ortho);
+//globeView.addLayer(Slopes);
 globeView.addLayer(DARK);
 globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
@@ -82,10 +84,12 @@ IGN_MNT_HR.id = 'HR_DTM_forWater';
 itowns.View.prototype.addLayer.call(globeView, IGN_MNT_HR, globeWater);
 // Ortho.id = 'Ortho_forWater';
 // itowns.View.prototype.addLayer.call(globeView, Ortho, globeWater);
-// itowns.Fetcher.json('src/layers/IGN_MNT_HIGHRES.json').then(function _(worldDTM) {
-//     worldDTM.id = 'toto';
-//     itowns.View.prototype.addLayer.call(globeView, worldDTM, globeWater);
-// });
+/* itowns.Fetcher.json('src/layers/IGN_MNS_HIGHRES.json').then(function _(litto3D) {
+     //worldDTM.id = 'toto';
+     itowns.View.prototype.addLayer.call(globeView, litto3D, globeWater);
+ });
+ */
+ 
 /*
 itowns.Fetcher.json('./layers/JSONLayers/OPENSM.json').then(function _(osm) {
     itowns.View.prototype.addLayer.call(globeView, osm, globeWater);
