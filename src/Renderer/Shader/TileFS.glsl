@@ -26,6 +26,7 @@ uniform float       distanceFog;
 uniform int         colorLayersCount;
 uniform vec3        lightPosition;
 uniform float       displacementZ;
+//uniform int         mode;
 
 uniform vec3        noTextureColor;
 
