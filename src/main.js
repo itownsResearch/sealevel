@@ -51,13 +51,59 @@ globeView.addLayer(Ortho);
 globeView.addLayer(DARK);
 globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
-//globeView.addLayer(bati);
+globeView.addLayer(bati);
 globeView.addLayer(batiRem);
 
+globeView.addLayer({
+    type: 'color',
+    id: 'iso_1',
+    name: 'iso_1',
+    transparent: true,
+    style: {
+        //fill: 'orange',
+        fillOpacity: 0.5,
+        stroke: 'yellow',
+    },
+    source: {
+        url: '../data/iso_alti_1.geojson',
+        protocol: 'file',
+        projection: 'EPSG:4326',
+    },
+});
 
+globeView.addLayer({
+    type: 'color',
+    id: 'iso_5',
+    name: 'iso_1',
+    transparent: true,
+    style: {
+        //fill: 'orange',
+        fillOpacity: 0.5,
+        stroke: 'red',
+        'stroke-width': 0.2
+    },
+    source: {
+        url: '../data/iso_alti_5.geojson',
+        protocol: 'file',
+        projection: 'EPSG:4326',
+    },
+});
 
+// let isos = new itowns.GeometryLayer('isos', new THREE.Group());
+// isos.update = itowns.FeatureProcessing.update;
+// isos.convert = itowns.Feature2Mesh.convert({
+//     color: new THREE.Color(0xffffff),
+//     });
 
+// isos.source = {
+//     url: '../data/iso_alti_0.geojson',
+//     protocol: 'file',
+//     projection: 'EPSG:4326',
+//     format: 'application/json',
+//     zoom: { min: 12, max: 12 },
+// };
 
+// globeView.addLayer(isos);
 console.log(globeView);
 
 /*************************************** WATER A.D ***********************************************/
@@ -96,7 +142,7 @@ itowns.Fetcher.json('./layers/JSONLayers/OPENSM.json').then(function _(osm) {
 });
 */
 /**************************************************************************************************/
-
+let time = 0;
 globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     globeView.controls.minDistance = 50;  // Allows the camera to get closer to the ground
     console.log('globe initialized ?', globeView);
@@ -105,7 +151,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     menuGlobe.addImageryLayersGUI(globeView.getLayers(l => l.type === 'color'));
     menuGlobe.addGeometryLayersGUI(globeView.getLayers(l => l.type === 'geometry' && l.id != 'globe'));
 
-    let flagLine = false;
+    let flagLines = [false, false];
     menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(6).step(0.04).onChange((
         function updateWaterLevel(value) {
             //let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
@@ -115,23 +161,37 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             shadMat.uniforms.waterLevel.value = value;
             shadMatRem.uniforms.waterLevel.value = value;
 
-            if (value >= 6.5 && !flagLine) {
-                let line = createLine(mairies["bati_remarquable.28316"]['pos'], mairies["bati_remarquable.159618"]['pos'], 'dashedLine');
-                globeView.scene.add(line);
-                console.log(globeView.scene);
-                flagLine = true;
+            if (value >= 3.0 && !flagLines[0]) {
+                let line1 = createLine(mairies["bati_remarquable.28316"]['pos'], mairies["bati_remarquable.159618"]['pos'], 'Line1');
+                globeView.scene.add(line1);
+                //console.log(globeView.scene);
+                flagLines[0] = true;
 
             }
-            if (value <= 6.5 && flagLine) {
+            if (value >= 5.5 && !flagLines[1]) {
+                let line2 = createLine(mairies["bati_remarquable.159618"]['pos'], mairies["bati_remarquable.159593"]['pos'], 'Line2');
+                globeView.scene.add(line2);
+                //console.log(globeView.scene);
+                flagLines[1] = true;
+
+            }
+            if (value < 3 && flagLines[0]) {
                 //globeView.scene.re
-                let selectedObject = globeView.scene.getObjectByName('dashedLine');
+                let selectedObject = globeView.scene.getObjectByName('Line1');
                 globeView.scene.remove(selectedObject);
-                flagLine = false;
+                flagLines[0] = false;
+            }
+            if (value < 5.5 && flagLines[1]) {
+                //globeView.scene.re
+                let selectedObject = globeView.scene.getObjectByName('Line2');
+                globeView.scene.remove(selectedObject);
+                flagLines[1] = false;
             }
             globeView.notifyChange(true);
 
         }));
     adjustAltitude(0.1);
+    animateLines();
     window.addEventListener('mousemove', picking, false);
 });
 
@@ -140,7 +200,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
 function picking(event) {
     if (globeView.controls.isPaused()) {
         var htmlInfo = document.getElementById('info');
-        var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings Remarquable');
+        var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings');
         var properties;
         var info;
         htmlInfo.innerHTML = ' ';
@@ -161,8 +221,9 @@ function picking(event) {
             });
             if (properties['nature'] === 'Mairie') {
                 // getting some bullshit info
-                htmlInfo.innerHTML += '<p class="beware">' + mairies[properties['id']]['text'] + '</p>'
                 let coords = globeView.controls.pickGeoPosition(globeView.eventToViewCoords(event));
+                console.log('coords', coords.as('EPSG:4978').xyz());
+                htmlInfo.innerHTML += '<p class="beware">' + mairies[properties['id']]['text'] + '</p>'
                 console.log('coords', coords.as('EPSG:4978').xyz());
                 console.log('geom ', geometry[id]);
 
@@ -171,3 +232,20 @@ function picking(event) {
         }
     }
 }
+
+function animateLines(){
+    //time = time / 1000;
+    let line1 = globeView.scene.getObjectByName('Line1');
+    let line2 = globeView.scene.getObjectByName('Line2');
+    if (line1)
+        line1.material.dashSize = Math.abs(Math.cosh(time)) * 50.0;
+    if (line2)
+        line2.material.dashSize = Math.abs(Math.sinh(time)) * 50.0;
+    time += 0.005;
+    //console.log("lol", time);
+    if (time > 3/*Math.PI/2*/){
+        time = 0;//-Math.PI/2;
+    }
+    globeView.notifyChange(true);
+    requestAnimationFrame(animateLines);
+};
