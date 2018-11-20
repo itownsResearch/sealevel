@@ -117,6 +117,7 @@ function GlobeView(viewerDiv, coordCarto, options = {}) {
     this.atmosphere.updateMatrixWorld(true);
 
     this.displacementZ = 0;
+    this.mode = 0;  // Color rendering mode (ugly here , just for test purpose)
 
     // Configure controls
     const positionTargetCamera = positionCamera.clone();
@@ -326,6 +327,24 @@ GlobeView.prototype.setDisplacementZ = function setDisplacementZ(v) {
         });
     }
 };
+
+
+GlobeView.prototype.updateMaterialUniformMode = function updateMaterialUniformMode(value) {
+    this._layers[0].mode = 0;
+    this._layers[1].mode = value;
+    var uniformName = 'mode';
+    for (const n of this._layers[1].level0Nodes) {
+        n.traverse((obj) => {
+            if (!obj.material || !obj.material.uniforms) {
+                return;
+            }
+            if (uniformName in obj.material.uniforms) {
+                obj.material.uniforms[uniformName].value = value;
+            }
+        });
+    }
+};
+
 
 GlobeView.prototype.updateMaterialUniform = function updateMaterialUniform(uniformName, value) {
     for (const n of this.tileLayer.level0Nodes) {

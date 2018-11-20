@@ -15,7 +15,7 @@ uniform sampler2D   dTextures_00[1];
 uniform vec3        offsetScale_L00[1];
 uniform int         loadedTexturesCount[8];
 uniform float       displacementZ;
-//uniform int         mode;
+uniform int         mode;
 
 uniform mat4        projectionMatrix;
 uniform mat4        modelViewMatrix;

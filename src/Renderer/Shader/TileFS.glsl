@@ -26,7 +26,7 @@ uniform float       distanceFog;
 uniform int         colorLayersCount;
 uniform vec3        lightPosition;
 uniform float       displacementZ;
-//uniform int         mode;
+uniform int         mode;
 
 uniform vec3        noTextureColor;
 
@@ -199,9 +199,15 @@ void main() {
 
         vec3 deep = vec3(37./255., 59./255., 78./255.);
         vec3 shallow = vec3(58./255., 95./255., 101./255.);
-    //    gl_FragColor.rgb = vec3(0.02745, 0.2666, 0.2784);
         gl_FragColor.rgb = mix(shallow, deep, min(waterHeight / 6., 1.));
 
+        if(mode>0){
+            if(waterHeight > 3.) gl_FragColor.r += 0.6;
+            else
+                if(waterHeight > 1.5) gl_FragColor.r += 0.3;
+        }
+
+      //  gl_FragColor.rgb = vec3(0.02745, 0.2666, 0.2784);
       //  gl_FragColor.a *= min(waterHeight, 1.);
 /*
         if(waterHeight > 3.) gl_FragColor.r += 0.6;
