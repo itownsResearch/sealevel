@@ -128,7 +128,7 @@ function featureToPoint(feature, options) {
     const colors = new Uint8Array(ptsIn.length);
 
     const batchIds = options.batchId ?  new Uint32Array(ptsIn.length / 3) : undefined;
-    let FeatureId = 0;
+    let featureId = 0;
 
     coordinatesToVertices(ptsIn, normals, vertices, options.altitude);
 
@@ -139,11 +139,11 @@ function featureToPoint(feature, options) {
         fillColorArray(colors, count, color, start);
 
         if (batchIds) {
-            const id = options.batchId(geometry.properties, FeatureId);
+            const id = options.batchId(geometry.properties, featureId);
             for (let i = start; i < start + count; i++) {
                 batchIds[i] = id;
             }
-            FeatureId++;
+            featureId++;
         }
     }
 
@@ -164,7 +164,7 @@ function featureToLine(feature, options) {
     const count = ptsIn.length / 3;
 
     const batchIds = options.batchId ?  new Uint32Array(count) : undefined;
-    let FeatureId = 0;
+    let featureId = 0;
 
     coordinatesToVertices(ptsIn, normals, vertices, options.altitude);
     const geom = new THREE.BufferGeometry();
@@ -195,11 +195,11 @@ function featureToLine(feature, options) {
                 }
             }
             if (batchIds) {
-                const id = options.batchId(geometry.properties, FeatureId);
+                const id = options.batchId(geometry.properties, featureId);
                 for (let i = start; i < end; i++) {
                     batchIds[i] = id;
                 }
-                FeatureId++;
+                featureId++;
             }
         }
         geom.addAttribute('color', new THREE.BufferAttribute(colors, 3, true));
@@ -211,7 +211,7 @@ function featureToLine(feature, options) {
         fillColorArray(colors, count, color);
         geom.addAttribute('color', new THREE.BufferAttribute(colors, 3, true));
         if (batchIds) {
-            const id = options.batchId(feature.geometry.properties, FeatureId);
+            const id = options.batchId(feature.geometry.properties, featureId);
             for (let i = 0; i < count; i++) {
                 batchIds[i] = id;
             }
@@ -232,7 +232,7 @@ function featureToPolygon(feature, options) {
     vertices.minAltitude = Infinity;
 
     const batchIds = options.batchId ?  new Uint32Array(vertices.length / 3) : undefined;
-    let FeatureId = 0;
+    let featureId = 0;
 
     for (const geometry of feature.geometry) {
         const altitude = getProperty('altitude', options, 0, geometry.properties);
@@ -264,11 +264,11 @@ function featureToPolygon(feature, options) {
         }
 
         if (batchIds) {
-            const id = options.batchId(geometry.properties, FeatureId);
+            const id = options.batchId(geometry.properties, featureId);
             for (let i = start; i < end; i++) {
                 batchIds[i] = id;
             }
-            FeatureId++;
+            featureId++;
         }
     }
 
@@ -317,7 +317,7 @@ function featureToExtrudedPolygon(feature, options) {
         attribute.itemSize = attribute.itemSize || 1;
         attribute.array = new (attribute.type)(2 * totalVertices * attribute.itemSize);
     }
-    let FeatureId = 0;
+    let featureId = 0;
 
     for (const geometry of feature.geometry) {
         const altitude = getProperty('altitude', options, 0, geometry.properties);
@@ -362,25 +362,30 @@ function featureToExtrudedPolygon(feature, options) {
 
         for (const attributeName of attributeNames) {
             const attribute = options.attributes[attributeName];
-            const itemSize = attribute.itemSize;
-            const value = attribute.value(geometry.properties, FeatureId);
-            if (Array.isArray(value)) {
-                for (let i = itemSize * start; i < itemSize * endTop; i++) {
-                    attribute.array[i] = value[i % itemSize];
-                }
-            } else if (value.isColor) {
-                // fillColorArray(attribute.array, 2 * count, value, start);
-                value.multiplyScalar(255);
-                for (let i = start; i < endTop; i++) {
-                    value.toArray(attribute.array, i * itemSize);
+            const value = attribute.value(geometry.properties, featureId);
+            if (value.isColor) {
+                fillColorArray(attribute.array, count, value, start);
+                fillColorArray(attribute.array, count, value, startTop);
+            } else if (Array.isArray(value)) {
+                const itemSize = value.length;
+                for (let i = start; i < end; i++) {
+                    for (let j = 0; j < itemSize; ++j) {
+                        const v = value[j];
+                        const offset = itemSize * i + j;
+                        attribute.array[offset] = v;
+                        attribute.array[offset + itemSize * totalVertices] = v;
+                    }
                 }
             } else {
-                for (let i = start; i < endTop; i++) {
+                for (let i = start; i < end; i++) {
+                    attribute.array[i] = value;
+                }
+                for (let i = startTop; i < endTop; i++) {
                     attribute.array[i] = value;
                 }
             }
         }
-        FeatureId++;
+        featureId++;
     }
 
     const geom = new THREE.BufferGeometry();
@@ -389,7 +394,6 @@ function featureToExtrudedPolygon(feature, options) {
     for (const attributeName of attributeNames) {
         const attribute = options.attributes[attributeName];
         geom.addAttribute(attributeName, new THREE.BufferAttribute(attribute.array, attribute.itemSize, attribute.normalized));
-        console.log(attribute.array);
     }
 
     geom.setIndex(new THREE.BufferAttribute(new Uint16Array(indices), 1));
