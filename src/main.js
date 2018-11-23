@@ -3,7 +3,9 @@ import GuiTools from './gui/GuiTools'
 
 import binarySearch from './utils/search'
 import createLine from './line'
+import { createLinks } from './utils/scenario'
 import mairies from '../data/mairies'
+import scenario from '../data/scenar.js'
 
 import * as THREE from 'three';  // We need THREE (no more exposed by itowns?)
 
@@ -36,17 +38,20 @@ function adjustAltitude(value) {
 }
 
 // Set water representation mode in shaders 
-function setMode(value){
+function setMode(value) {
 
     var v = parseInt(value);
     globeView.updateMaterialUniformMode(v);
     globeView.notifyChange();
 }
 
+//passing value to the buildings shaders
+function adjustBuildingColors(value) {
+    shadMat.uniforms.waterLevel.value = value;
+    shadMatRem.uniforms.waterLevel.value = value;
+}
+
 const viewerDiv = document.getElementById('viewerDiv');
-
-
-
 const htmlInfo = document.getElementById('info');
 // Options for segments in particular is not well handled
 // We modified some code in itowns and created an issue https://github.com/iTowns/itowns/issues/910
@@ -118,7 +123,7 @@ console.log(globeView);
 // Here we create the Tile geometry for the water using a globe with specific vertex displacement
 let object3d = new THREE.Object3D();
 let segments = 128;
-const globeWater = itowns.createGlobeLayer('globeWater', { object3d, segments});
+const globeWater = itowns.createGlobeLayer('globeWater', { object3d, segments });
 globeWater.disableSkirt = true;
 globeWater.opacity = 0.999; // So we can handle transparency check for nice shading
 // We can maybe specify a more refined geometry for the water using segments option
@@ -143,13 +148,43 @@ itowns.View.prototype.addLayer.call(globeView, IGN_MNT_HR, globeWater);
      itowns.View.prototype.addLayer.call(globeView, litto3D, globeWater);
  });
  */
- 
+
 /*
 itowns.Fetcher.json('./layers/JSONLayers/OPENSM.json').then(function _(osm) {
     itowns.View.prototype.addLayer.call(globeView, osm, globeWater);
 });
 */
 /**************************************************************************************************/
+
+const links = createLinks(scenario);
+
+//does not work as expected for now..
+function adjustLinks(h, links) {
+    console.log('*****************************************************************')
+    for (const link of links) {
+        console.log('ll ', link);
+        if (h >= link['hauteur_dysf'] && !link['onScreen']) {
+            console.log('link ', link['line'].name, ' added to globeview ', link['hauteur_dysf'], ' <= ', h);
+            link['onScreen'] = true;
+            console.log('linky : ', link);
+            globeView.scene.add(link['line']);
+        }
+        else if (h < link['hauteur_dysf'] && link['onScreen']) {
+            console.log('link ', link['line'].name, ' to erase from globeview ', link['hauteur_dysf'], '> ', h);
+            const selectedObject = globeView.scene.getObjectByName(link['line'].name);
+            console.log('so -- ', selectedObject);
+            globeView.scene.remove(selectedObject);
+            link['onScreen'] = false;
+            console.log('linky : ', link);
+        }
+        //globeView.notifyChange(true);
+    }
+    globeView.notifyChange(true);
+    console.log('links -------- ', links);
+    console.log('*****************************************************************')
+}
+
+
 let time = 0;
 globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     globeView.controls.minDistance = 50;  // Allows the camera to get closer to the ground
@@ -159,39 +194,45 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     menuGlobe.addImageryLayersGUI(globeView.getLayers(l => l.type === 'color'));
     menuGlobe.addGeometryLayersGUI(globeView.getLayers(l => l.type === 'geometry' && l.id != 'globe'));
 
+
     let flagLines = [false, false];
-    menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(6).step(0.04).onChange((
+
+    menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(6).step(1).onChange((
         function updateWaterLevel(value) {
             //let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
             //console.log('lay', lay);
-
+            //const links = createLinks(scenario);
             adjustAltitude(value);
-            shadMat.uniforms.waterLevel.value = value;
-            shadMatRem.uniforms.waterLevel.value = value;
+            adjustBuildingColors(value);
+            //adjustLinks(value);
 
             if (value >= 3.0 && !flagLines[0]) {
-                let line1 = createLine(mairies["bati_remarquable.28316"]['pos'], mairies["bati_remarquable.159618"]['pos'], 'Line1');
+                //let line1 = createLine(mairies["bati_remarquable.28316"]['pos'], mairies["bati_remarquable.159618"]['pos'], 'l_0');
+                //let line1 = links[0]['line'];
+                let line1 = createLine(scenario.links[0].from.pos, scenario.links[0].to.pos, 'l_0');
+                //console.log(links[0]['line']);
                 globeView.scene.add(line1);
                 //console.log(globeView.scene);
                 flagLines[0] = true;
 
             }
             if (value >= 5.5 && !flagLines[1]) {
-                let line2 = createLine(mairies["bati_remarquable.159618"]['pos'], mairies["bati_remarquable.159593"]['pos'], 'Line2');
+                //let line2 = createLine(mairies["bati_remarquable.159618"]['pos'], mairies["bati_remarquable.159593"]['pos'], 'l_1');
+                //let line2 = links[1]['line'];
+                let line2 = createLine(scenario.links[1].from.pos, scenario.links[1].to.pos, 'l_1');
+                //console.log(links[1]['line']);
                 globeView.scene.add(line2);
                 //console.log(globeView.scene);
                 flagLines[1] = true;
 
             }
             if (value < 3 && flagLines[0]) {
-                //globeView.scene.re
-                let selectedObject = globeView.scene.getObjectByName('Line1');
+                let selectedObject = globeView.scene.getObjectByName('l_0');
                 globeView.scene.remove(selectedObject);
                 flagLines[0] = false;
             }
             if (value < 5.5 && flagLines[1]) {
-                //globeView.scene.re
-                let selectedObject = globeView.scene.getObjectByName('Line2');
+                let selectedObject = globeView.scene.getObjectByName('l_1');
                 globeView.scene.remove(selectedObject);
                 flagLines[1] = false;
             }
@@ -199,22 +240,23 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
 
         }));
 
-        menuGlobe.gui.add({ mode: 0 }, 'mode').min(0).max(3).step(1).onChange((
-            function updateWaterMode(value) {
-                setMode(value);
-            }
-        ));
+    menuGlobe.gui.add({ mode: 0 }, 'mode').min(0).max(3).step(1).onChange((
+        function updateWaterMode(value) {
+            setMode(value);
+        }
+    ));
 
     adjustAltitude(0.1);
     animateLines();
     window.addEventListener('mousemove', picking, false);
+    console.log('links');
 });
 
 
 // from itowns examples, can't say I really understand what is going on...
 function picking(event) {
     if (globeView.controls.isPaused()) {
-        var htmlInfo = document.getElementById('info');
+        //var htmlInfo = document.getElementById('info');
         var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings');
         var properties;
         var info;
@@ -248,17 +290,17 @@ function picking(event) {
     }
 }
 
-function animateLines(){
+function animateLines() {
     //time = time / 1000;
-    let line1 = globeView.scene.getObjectByName('Line1');
-    let line2 = globeView.scene.getObjectByName('Line2');
+    let line1 = globeView.scene.getObjectByName('l_0');
+    let line2 = globeView.scene.getObjectByName('l_1');
     if (line1)
         line1.material.dashSize = Math.abs(Math.cosh(time)) * 50.0;
     if (line2)
         line2.material.dashSize = Math.abs(Math.sinh(time)) * 50.0;
     time += 0.005;
     //console.log("lol", time);
-    if (time > 3/*Math.PI/2*/){
+    if (time > 3/*Math.PI/2*/) {
         time = 0;//-Math.PI/2;
     }
     globeView.notifyChange(true);
