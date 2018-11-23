@@ -37,7 +37,7 @@ function adjustAltitude(value) {
 
 }
 
-// Set water representation mode in shaders 
+// Set water representation mode in shaders
 function setMode(value) {
 
     var v = parseInt(value);
@@ -186,6 +186,7 @@ function adjustLinks(h, links) {
 
 
 let time = 0;
+let lines = [];
 globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     globeView.controls.minDistance = 50;  // Allows the camera to get closer to the ground
     console.log('globe initialized ?', globeView);
@@ -194,10 +195,14 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     menuGlobe.addImageryLayersGUI(globeView.getLayers(l => l.type === 'color'));
     menuGlobe.addGeometryLayersGUI(globeView.getLayers(l => l.type === 'geometry' && l.id != 'globe'));
 
+    for(let i = 0; i < scenario.links.length; ++i) {
+        const line = createLine(scenario.links[i].from.pos, scenario.links[i].to.pos, 'l_'+i);
+        line.visible = false;
+        lines.push(line);
+        globeView.scene.add(line);
+    }
 
-    let flagLines = [false, false];
-
-    menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(6).step(1).onChange((
+    menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(6).onChange((
         function updateWaterLevel(value) {
             //let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
             //console.log('lay', lay);
@@ -206,38 +211,10 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             adjustBuildingColors(value);
             //adjustLinks(value);
 
-            if (value >= 3.0 && !flagLines[0]) {
-                //let line1 = createLine(mairies["bati_remarquable.28316"]['pos'], mairies["bati_remarquable.159618"]['pos'], 'l_0');
-                //let line1 = links[0]['line'];
-                let line1 = createLine(scenario.links[0].from.pos, scenario.links[0].to.pos, 'l_0');
-                //console.log(links[0]['line']);
-                globeView.scene.add(line1);
-                //console.log(globeView.scene);
-                flagLines[0] = true;
-
-            }
-            if (value >= 5.5 && !flagLines[1]) {
-                //let line2 = createLine(mairies["bati_remarquable.159618"]['pos'], mairies["bati_remarquable.159593"]['pos'], 'l_1');
-                //let line2 = links[1]['line'];
-                let line2 = createLine(scenario.links[1].from.pos, scenario.links[1].to.pos, 'l_1');
-                //console.log(links[1]['line']);
-                globeView.scene.add(line2);
-                //console.log(globeView.scene);
-                flagLines[1] = true;
-
-            }
-            if (value < 3 && flagLines[0]) {
-                let selectedObject = globeView.scene.getObjectByName('l_0');
-                globeView.scene.remove(selectedObject);
-                flagLines[0] = false;
-            }
-            if (value < 5.5 && flagLines[1]) {
-                let selectedObject = globeView.scene.getObjectByName('l_1');
-                globeView.scene.remove(selectedObject);
-                flagLines[1] = false;
+            for(let i = 0; i < scenario.links.length; ++i) {
+              lines[i].visible = (value >= scenario.links[i].hauteur_dysf);
             }
             globeView.notifyChange(true);
-
         }));
 
     menuGlobe.gui.add({ mode: 0 }, 'mode').min(0).max(3).step(1).onChange((
@@ -248,7 +225,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
 
     adjustAltitude(0.1);
     animateLines();
-    window.addEventListener('mousemove', picking, false);
+    window.addEventListener('click', picking, false);
     console.log('links');
 });
 
@@ -273,7 +250,7 @@ function picking(event) {
                 if (key[0] !== '_' && key !== 'geometry_name') {
                     info = value.toString();
                     htmlInfo.innerHTML += '<li><b>' + key + ': </b>' + info + '</li>';
-                    //console.log('geom ', geometry[id]);                    
+                    //console.log('geom ', geometry[id]);
                 }
             });
             if (properties['nature'] === 'Mairie') {
@@ -291,17 +268,9 @@ function picking(event) {
 }
 
 function animateLines() {
-    //time = time / 1000;
-    let line1 = globeView.scene.getObjectByName('l_0');
-    let line2 = globeView.scene.getObjectByName('l_1');
-    if (line1)
-        line1.material.dashSize = Math.abs(Math.cosh(time)) * 50.0;
-    if (line2)
-        line2.material.dashSize = Math.abs(Math.sinh(time)) * 50.0;
-    time += 0.005;
-    //console.log("lol", time);
-    if (time > 3/*Math.PI/2*/) {
-        time = 0;//-Math.PI/2;
+    time += 0.02;
+    for (let i = 0; i < lines.length ; ++i) {
+      lines[i].material.dashSize = lines[i].material.gapSize * (2 + Math.cos(time));
     }
     globeView.notifyChange(true);
     requestAnimationFrame(animateLines);
