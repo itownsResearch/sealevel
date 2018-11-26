@@ -6,6 +6,7 @@ function createMaterial(vShader, fShader) {
     let uniforms = {
         time: {type: 'f', value: 0.2},
         waterLevel: {type: 'f', value: 0.0},
+        opacity: {type: 'f', value: 1.0},
         // resolution: {type: "v2", value: new THREE.Vector2()},
     };
     // uniforms.resolution.value.x = window.innerWidth;
@@ -40,6 +41,7 @@ const fragmentShader = `
 uniform float time;
 uniform float waterLevel;
 varying float zbot;
+uniform float opacity;
 
 #define PI 3.14159
 #define TWO_PI (PI*2.0)
@@ -47,32 +49,32 @@ varying float zbot;
 
 void main(){
     #include <logdepthbuf_fragment>
-    // gl_FragColor = vec4(1.-fract(zbot), 0.0, fract(zbot), 1.0);
+    // gl_FragColor = vec4(1.-fract(zbot), 0.0, fract(zbot), opacity);
     // return;
     if (abs(zbot) > 1000.0){
-        gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+        gl_FragColor = vec4(0.0, 0.0, 1.0, opacity);
         return;
     }
     if (waterLevel - zbot > 3.0){
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        gl_FragColor = vec4(1.0, 0.0, 0.0, opacity);
         return;
     }
     else if (waterLevel - zbot > 2.0){
-        gl_FragColor = vec4(0.8, 0.5, 0.0, 1.0);
+        gl_FragColor = vec4(0.8, 0.5, 0.0, opacity);
         return;
     }
     else if (waterLevel - zbot > 0.0){
-        gl_FragColor = vec4(0.8, 0.7, 0.0, 1.0);
+        gl_FragColor = vec4(0.8, 0.7, 0.0, opacity);
         return;
     }
-    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+    gl_FragColor = vec4(0.0, 1.0, 0.0, opacity);
 }
 `;
 
 let resultoss;
 let shadMat = createMaterial(vertexShader, fragmentShader);
 function addShader(result){
-    result.material = shadMat; 
+    result.material = shadMat;
     //console.log("result ", result)
     resultoss = result;
     // let k = 0;
@@ -89,7 +91,7 @@ function extrudeBuildings(properties) {
 }
 
 function altitudeBuildings(properties) {
-    return properties.z_min - properties.hauteur;
+    return properties.z_max - properties.hauteur;
 }
 
 //const nivEau = 20

@@ -67,11 +67,12 @@ globeView.addLayer(IGN_MNT_HR);
 globeView.addLayer(bati);
 globeView.addLayer(batiRem);
 
-globeView.addLayer({
+const iso_1_config = {
     type: 'color',
     id: 'iso_1',
     name: 'iso_1',
     transparent: true,
+    visible: false,
     style: {
         //fill: 'orange',
         fillOpacity: 0.5,
@@ -82,13 +83,14 @@ globeView.addLayer({
         protocol: 'file',
         projection: 'EPSG:4326',
     },
-});
+};
 
-globeView.addLayer({
+const iso_5_config = {
     type: 'color',
     id: 'iso_5',
     name: 'iso_1',
     transparent: true,
+    visible: false,
     style: {
         //fill: 'orange',
         fillOpacity: 0.5,
@@ -100,7 +102,11 @@ globeView.addLayer({
         protocol: 'file',
         projection: 'EPSG:4326',
     },
-});
+};
+
+
+globeView.addLayer(iso_1_config);
+globeView.addLayer(iso_5_config);
 
 // let isos = new itowns.GeometryLayer('isos', new THREE.Group());
 // isos.update = itowns.FeatureProcessing.update;
@@ -270,8 +276,9 @@ function picking(event) {
 function animateLines() {
     time += 0.02;
     for (let i = 0; i < lines.length ; ++i) {
-      lines[i].material.dashSize = lines[i].material.gapSize * (2 + Math.cos(time));
+      lines[i].material.dashSize = lines[i].material.gapSize * (1+time);
     }
+    time = time % 2;
     globeView.notifyChange(true);
     requestAnimationFrame(animateLines);
 };
