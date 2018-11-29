@@ -1,4 +1,4 @@
-import createLine from '../line'
+import createLine from './line'
 
 function createLinks(scenar) {
     const lines = [];
