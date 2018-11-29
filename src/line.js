@@ -3,7 +3,7 @@ import * as THREE from 'three';
 function createLine(first, second, name){
     let firstpos = new THREE.Vector3(first.x, first.y, first.z);
     let secondpos = new THREE.Vector3(second.x, second.y, second.z);
-    let segmentCount = 100;
+    const segmentCount = 100;
     //let radius = firstpos.distanceTo(secondpos);
 
     let material = new THREE.LineDashedMaterial({ color: 0xacab00, linewidth: 3, dashSize: 50, gapSize: 80 });

@@ -2,7 +2,6 @@ import * as itowns from 'itowns'
 import GuiTools from './gui/GuiTools'
 
 import binarySearch from './utils/search'
-import createLine from './line'
 import { createLinks } from './utils/scenario'
 import mairies from '../data/mairies'
 import scenario from '../data/scenar.js'
@@ -14,6 +13,7 @@ import IGN_MNT from './layers/IGN_MNT'
 import DARK from './layers/DARK'
 import Ortho from './layers/Ortho'
 import Slopes from './layers/slopesImage'
+import {iso_1_config, iso_5_config} from './layers/isolines'
 
 import WORLD_DTM from './layers/WORLD_DTM'
 
@@ -28,6 +28,27 @@ let coords = { lon: -0.650, lat: 44.905, deltaLon: 0.160, deltaLat: -0.110 };
 positionOnGlobe = { longitude: -1.412, latitude: 46.208, altitude: 10000 };
 coords = { lon: -1.563, lat: 46.256, deltaLon: 0.300, deltaLat: -0.150 };
 
+const viewerDiv = document.getElementById('viewerDiv');
+const htmlInfo = document.getElementById('info');
+// Options for segments in particular is not well handled
+// We modified some code in itowns and created an issue https://github.com/iTowns/itowns/issues/910
+let options = { segments: 128 }; // We specify a more refined tile geomtry than default 16*16
+const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
+const menuGlobe = new GuiTools('menuDiv', globeView)
+
+// I have to call it twice to make it works, even if i destroy the result immediately, don't ask why..
+let liness = createLinks(scenario);
+liness = null;
+// the last line described in the json is just added to make it work, we won't add it to the scene, strange hack..
+const lines = createLinks(scenario);
+lines.pop();
+
+function addtoscene(lines){
+    for (let i = 0; i < lines.length; ++i) {
+        globeView.scene.add(lines[i]);
+    }
+}
+
 function adjustAltitude(value) {
     // A.D Here we specify the Z displacement for the water
     var displacement = value;
@@ -39,7 +60,6 @@ function adjustAltitude(value) {
 
 // Set water representation mode in shaders
 function setMode(value) {
-
     var v = parseInt(value);
     globeView.updateMaterialUniformMode(v);
     globeView.notifyChange();
@@ -51,13 +71,12 @@ function adjustBuildingColors(value) {
     shadMatRem.uniforms.waterLevel.value = value;
 }
 
-const viewerDiv = document.getElementById('viewerDiv');
-const htmlInfo = document.getElementById('info');
-// Options for segments in particular is not well handled
-// We modified some code in itowns and created an issue https://github.com/iTowns/itowns/issues/910
-let options = { segments: 128 }; // We specify a more refined tile geomtry than default 16*16
-const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
-const menuGlobe = new GuiTools('menuDiv', globeView)
+//changing visibility of lines according to the scenario
+function setLinesVisibility(lines, value){
+    for(let i = 0; i < lines.length ; ++i) {
+        lines[i].visible = (value >= scenario.links[i].hauteur_dysf);
+    }
+}
 
 globeView.addLayer(Ortho);
 //globeView.addLayer(Slopes);
@@ -66,64 +85,8 @@ globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
 globeView.addLayer(bati);
 globeView.addLayer(batiRem);
-
-const iso_1_config = {
-    type: 'color',
-    id: 'iso_1',
-    name: 'iso_1',
-    transparent: true,
-    visible: false,
-    style: {
-        //fill: 'orange',
-        fillOpacity: 0.5,
-        stroke: 'yellow',
-    },
-    source: {
-        url: '../data/iso_alti_1.geojson',
-        protocol: 'file',
-        projection: 'EPSG:4326',
-    },
-};
-
-const iso_5_config = {
-    type: 'color',
-    id: 'iso_5',
-    name: 'iso_1',
-    transparent: true,
-    visible: false,
-    style: {
-        //fill: 'orange',
-        fillOpacity: 0.5,
-        stroke: 'red',
-        'stroke-width': 0.2
-    },
-    source: {
-        url: '../data/iso_alti_5.geojson',
-        protocol: 'file',
-        projection: 'EPSG:4326',
-    },
-};
-
-
 globeView.addLayer(iso_1_config);
 globeView.addLayer(iso_5_config);
-
-// let isos = new itowns.GeometryLayer('isos', new THREE.Group());
-// isos.update = itowns.FeatureProcessing.update;
-// isos.convert = itowns.Feature2Mesh.convert({
-//     color: new THREE.Color(0xffffff),
-//     });
-
-// isos.source = {
-//     url: '../data/iso_alti_0.geojson',
-//     protocol: 'file',
-//     projection: 'EPSG:4326',
-//     format: 'application/json',
-//     zoom: { min: 12, max: 12 },
-// };
-
-// globeView.addLayer(isos);
-console.log(globeView);
 
 /*************************************** WATER A.D ***********************************************/
 // Here we create the Tile geometry for the water using a globe with specific vertex displacement
@@ -162,64 +125,20 @@ itowns.Fetcher.json('./layers/JSONLayers/OPENSM.json').then(function _(osm) {
 */
 /**************************************************************************************************/
 
-const links = createLinks(scenario);
-
-//does not work as expected for now..
-function adjustLinks(h, links) {
-    console.log('*****************************************************************')
-    for (const link of links) {
-        console.log('ll ', link);
-        if (h >= link['hauteur_dysf'] && !link['onScreen']) {
-            console.log('link ', link['line'].name, ' added to globeview ', link['hauteur_dysf'], ' <= ', h);
-            link['onScreen'] = true;
-            console.log('linky : ', link);
-            globeView.scene.add(link['line']);
-        }
-        else if (h < link['hauteur_dysf'] && link['onScreen']) {
-            console.log('link ', link['line'].name, ' to erase from globeview ', link['hauteur_dysf'], '> ', h);
-            const selectedObject = globeView.scene.getObjectByName(link['line'].name);
-            console.log('so -- ', selectedObject);
-            globeView.scene.remove(selectedObject);
-            link['onScreen'] = false;
-            console.log('linky : ', link);
-        }
-        //globeView.notifyChange(true);
-    }
-    globeView.notifyChange(true);
-    console.log('links -------- ', links);
-    console.log('*****************************************************************')
-}
-
-
 let time = 0;
-let lines = [];
 globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     globeView.controls.minDistance = 50;  // Allows the camera to get closer to the ground
     console.log('globe initialized ?', globeView);
-    console.log(globeView.referenceCrs);
+    addtoscene(lines);
 
     menuGlobe.addImageryLayersGUI(globeView.getLayers(l => l.type === 'color'));
     menuGlobe.addGeometryLayersGUI(globeView.getLayers(l => l.type === 'geometry' && l.id != 'globe'));
 
-    for(let i = 0; i < scenario.links.length; ++i) {
-        const line = createLine(scenario.links[i].from.pos, scenario.links[i].to.pos, 'l_'+i);
-        line.visible = false;
-        lines.push(line);
-        globeView.scene.add(line);
-    }
-
     menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(6).onChange((
         function updateWaterLevel(value) {
-            //let lay = globeView.getLayers(l => l.id == 'WFS Buildings')[0];
-            //console.log('lay', lay);
-            //const links = createLinks(scenario);
             adjustAltitude(value);
             adjustBuildingColors(value);
-            //adjustLinks(value);
-
-            for(let i = 0; i < scenario.links.length; ++i) {
-              lines[i].visible = (value >= scenario.links[i].hauteur_dysf);
-            }
+            setLinesVisibility(lines, value);
             globeView.notifyChange(true);
         }));
 
@@ -240,7 +159,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
 function picking(event) {
     if (globeView.controls.isPaused()) {
         //var htmlInfo = document.getElementById('info');
-        var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings');
+        var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings Remarquable');
         var properties;
         var info;
         htmlInfo.innerHTML = ' ';
@@ -262,12 +181,9 @@ function picking(event) {
             if (properties['nature'] === 'Mairie') {
                 // getting some bullshit info
                 let coords = globeView.controls.pickGeoPosition(globeView.eventToViewCoords(event));
-                console.log('coords', coords.as('EPSG:4978').xyz());
                 htmlInfo.innerHTML += '<p class="beware">' + mairies[properties['id']]['text'] + '</p>'
                 console.log('coords', coords.as('EPSG:4978').xyz());
-                console.log('geom ', geometry[id]);
-
-                //console.log(mairies[properties['id']]['text']);
+                //console.log('geometry ', geometry[id]);
             }
         }
     }
