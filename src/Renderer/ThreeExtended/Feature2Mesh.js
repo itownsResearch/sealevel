@@ -362,18 +362,18 @@ function featureToExtrudedPolygon(feature, options) {
 
         for (const attributeName of attributeNames) {
             const attribute = options.attributes[attributeName];
-            const value = attribute.value(geometry.properties, featureId);
+            const value = attribute.value(geometry.properties, featureId, false);
+            const valueTop = attribute.value(geometry.properties, featureId, true);
             if (value.isColor) {
                 fillColorArray(attribute.array, count, value, start);
-                fillColorArray(attribute.array, count, value, startTop);
+                fillColorArray(attribute.array, count, valueTop, startTop);
             } else if (Array.isArray(value)) {
                 const itemSize = value.length;
                 for (let i = start; i < end; i++) {
                     for (let j = 0; j < itemSize; ++j) {
-                        const v = value[j];
                         const offset = itemSize * i + j;
-                        attribute.array[offset] = v;
-                        attribute.array[offset + itemSize * totalVertices] = v;
+                        attribute.array[offset] = value[j];
+                        attribute.array[offset + itemSize * totalVertices] = valueTop[j];
                     }
                 }
             } else {
@@ -381,7 +381,7 @@ function featureToExtrudedPolygon(feature, options) {
                     attribute.array[i] = value;
                 }
                 for (let i = startTop; i < endTop; i++) {
-                    attribute.array[i] = value;
+                    attribute.array[i] = valueTop;
                 }
             }
         }
