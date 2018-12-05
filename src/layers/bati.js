@@ -4,13 +4,13 @@ import { getColor } from './color';
 
 function createMaterial(vShader, fShader) {
     let uniforms = {
-        time: {type: 'f', value: 0.2},
         waterLevel: {type: 'f', value: 0.0},
         opacity: {type: 'f', value: 1.0},
-        // resolution: {type: "v2", value: new THREE.Vector2()},
+        z0: {type: 'f', value: 0.0},
+        z1: {type: 'f', value: 2.0},
+        color0: {type: 'c', value: new THREE.Color(0x888888)},
+        color1: {type: 'c', value: new THREE.Color(0x4444ff)},
     };
-    // uniforms.resolution.value.x = window.innerWidth;
-    // uniforms.resolution.value.y = window.innerHeight;
 
     let meshMaterial = new THREE.ShaderMaterial({
         uniforms: uniforms,
@@ -25,49 +25,28 @@ function createMaterial(vShader, fShader) {
 
 const vertexShader = `
 #include <logdepthbuf_pars_vertex>
-uniform float time;
 attribute float zbottom;
-varying float zbot;
+uniform float waterLevel;
+uniform float opacity;
+uniform vec3 color0;
+uniform vec3 color1;
+uniform float z0;
+uniform float z1;
 
+varying vec4 v_color;
 void main(){
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    zbot = zbottom;
-    #include <logdepthbuf_vertex>
+    float t = smoothstep(z0, z1, waterLevel-zbottom); // zbottom+z0 -> 0, zbottom+z1 -> 1
+    v_color = vec4(mix(color0, color1, t), opacity);
 }
 `;
 
 const fragmentShader = `
 #include <logdepthbuf_pars_fragment>
-uniform float time;
-uniform float waterLevel;
-varying float zbot;
-uniform float opacity;
-
-#define PI 3.14159
-#define TWO_PI (PI*2.0)
-#define N 68.5
-
+varying vec4 v_color;
 void main(){
     #include <logdepthbuf_fragment>
-    // gl_FragColor = vec4(1.-fract(zbot), 0.0, fract(zbot), opacity);
-    // return;
-    if (abs(zbot) > 1000.0){
-        gl_FragColor = vec4(0.0, 0.0, 1.0, opacity);
-        return;
-    }
-    if (waterLevel - zbot > 3.0){
-        gl_FragColor = vec4(1.0, 0.0, 0.0, opacity);
-        return;
-    }
-    else if (waterLevel - zbot > 2.0){
-        gl_FragColor = vec4(0.8, 0.5, 0.0, opacity);
-        return;
-    }
-    else if (waterLevel - zbot > 0.0){
-        gl_FragColor = vec4(0.8, 0.7, 0.0, opacity);
-        return;
-    }
-    gl_FragColor = vec4(0.0, 1.0, 0.0, opacity);
+    gl_FragColor = v_color;
 }
 `;
 
@@ -119,9 +98,9 @@ let bati = {
         altitude: altitudeBuildings,
         extrude: extrudeBuildings,
         attributes: { // works for extruded meshes only
-            // color: { type: Uint8Array, value: colorBuildings, itemSize:3, normalized:true }, // does not work
+//            color: { type: Uint8Array, value: (prop, id, extruded) => { return new THREE.Color(extruded ? 0xff8888 : 0xffffff);}, itemSize:3, normalized:true },
             zbottom: { type: Float32Array, value: altitudeBuildings },
-            id: { type: Uint32Array, value: (prop, id) => { return id } }
+            id: { type: Uint32Array, value: (prop, id) => { return id;} }
         },
     }),
     onMeshCreated: addShader,
