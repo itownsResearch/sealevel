@@ -38,3 +38,50 @@ body { margin: 0; overflow:hidden; height:100%}
 .beware {
     color: red;
 }
+
+.bewareOrange {
+    color: orangered;
+}
+.bewareYellow {
+    color: yellow;
+}
+
+.bewareNiet {
+    color: green;
+}
+
+#board {
+    position: absolute;
+    z-index: 0;
+    bottom: 0;
+    right: 0;
+    color: grey;
+    font: 28px 'Lucida Grande',sans-serif;
+    line-height: normal;
+    text-shadow: 0 -1px 0 #111;
+    padding: 0 1rem;
+    background: #1a1a1a;
+    border: 1px solid #2c2c2c;
+    opacity: 0.7;
+}
+
+#redsquare {
+    width: 10px;
+    height: 10px;
+    background: red;
+}
+#orangesquare {
+    width: 10px;
+    height: 10px;
+    background: orangered;
+}
+#yellowsquare {
+    width: 10px;
+    height: 10px;
+    background: yellow;
+}
+#greensquare {
+    width: 10px;
+    height: 10px;
+    background: green;
+}

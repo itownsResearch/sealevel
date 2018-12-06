@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Sea Level Interactive Visualization</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
+
 <body>
     <div id="viewerDiv"></div>
     <div id="batchInformationDiv">
@@ -13,6 +15,32 @@
         <ul id="info">
         </ul>
     </div>
+    <div id="board">
+        <div id="boardSpace"></div>
+        <div class="legende">
+            <table>
+              <tbody>
+                  <tr>
+                      <td><div id="redsquare"></div></td>
+                      <td class="legend" id="redlegend"><span><b>Une vigilance absolue s'impose</b></span></td>
+                  </tr>
+                  <tr>
+                      <td><div id="orangesquare"></div></td>
+                      <td class="legend" id="orangelegend"><span><b>Soyez très vigilant</b></span></td>
+                  </tr>
+                  <tr>
+                      <td><div id="yellowsquare"></td>
+                      <td class="legend" id="yellowlegend"><span><b>Soyez attentifs</b></span></td>
+                  </tr>
+                  <tr>
+                      <td><div id="greensquare"></td>
+                      <td class="legend" id="greenlegend"><span><b>Pas de vigilance particulière</b></span></td>
+                  </tr>
+              </tbody>
+            </table>
+        </div>
+    </div>
     <script src="dist/bundle.js"></script>
 </body>
+
 </html>

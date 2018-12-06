@@ -8,8 +8,10 @@ function createMaterial(vShader, fShader) {
         opacity: {type: 'f', value: 1.0},
         z0: {type: 'f', value: 0.0},
         z1: {type: 'f', value: 2.0},
-        color0: {type: 'c', value: new THREE.Color(0x888888)},
-        color1: {type: 'c', value: new THREE.Color(0x4444ff)},
+        //color0: {type: 'c', value: new THREE.Color(0x888888)},
+        color0: {type: 'c', value: new THREE.Color(0x006600)},
+        color1: {type: 'c', value: new THREE.Color(0xbb0000)},
+        //color1: {type: 'c', value: new THREE.Color(0x4444ff)},
     };
 
     let meshMaterial = new THREE.ShaderMaterial({
