@@ -7,6 +7,22 @@ body { margin: 0; overflow:hidden; height:100%}
     top: 0;
     margin-left: 0;
 }
+
+#batchLegende {
+    position: absolute;
+    z-index: 0;
+    bottom: 0;
+    left: 0;
+    color: white;
+    font: 11px 'Lucida Grande',sans-serif;
+    line-height: normal;
+    text-shadow: 0 -1px 0 #111;
+    padding: 0 1rem;
+    background: #1a1a1a;
+    border: 1px solid #2c2c2c;
+    opacity: 0.8;
+
+}
 #batchInformationDiv {
     position: absolute;
     z-index: 0;

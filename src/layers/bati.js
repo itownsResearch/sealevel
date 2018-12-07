@@ -26,6 +26,7 @@ function createMaterial(vShader, fShader) {
 const vertexShader = `
 #include <logdepthbuf_pars_vertex>
 attribute float zbottom;
+attribute vec3 color;
 uniform float waterLevel;
 uniform float opacity;
 uniform vec3 color0;
@@ -34,26 +35,44 @@ uniform float z0;
 uniform float z1;
 
 varying vec4 v_color;
+//varying float v_height;
 void main(){
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     float t = smoothstep(z0, z1, waterLevel-zbottom); // zbottom+z0 -> 0, zbottom+z1 -> 1
     v_color = vec4(mix(color0, color1, t), opacity);
+    v_color.rgb *= color.r * 2.;
+   // float modHeight = mod(length(modelMatrix * vec4(position, 1.0)), 2.);
+ //   v_height = modHeight;
+    /*
+        vec3 l = vec3(1.,0.,0.);  // 
+        float cosTheta = clamp( dot( normal,l ), 0., 1. );
+        vec4 lightColor = vec4(1.,0.,0.,1.);
+        v_color = vec4(normal, 1.); //lightColor * cosTheta;
+    */
+    // v_color.rgb += clamp(modHeight / 2., 0., 1.0) / 10.;
+    // v_color.a = 1.;
+    #include <logdepthbuf_vertex>
 }
 `;
 
 const fragmentShader = `
 #include <logdepthbuf_pars_fragment>
 varying vec4 v_color;
+//varying float v_height;
 void main(){
     #include <logdepthbuf_fragment>
-    gl_FragColor = v_color;
+    //float bo = clamp(v_height / 2., 0., 1.0) ; // 10.;
+    gl_FragColor = v_color; //vec4(vec3(bo, bo, bo), 1.); // v_color;
 }
 `;
 
 let resultoss;
 let shadMat = createMaterial(vertexShader, fragmentShader);
 function addShader(result){
+    result.geometry.computeVertexNormals();
+    result.geometry.computeFaceNormals();
     result.material = shadMat;
+    result.material.side= THREE.DoubleSide;
     //console.log("result ", result)
     resultoss = result;
     // let k = 0;
@@ -98,7 +117,7 @@ let bati = {
         altitude: altitudeBuildings,
         extrude: extrudeBuildings,
         attributes: { // works for extruded meshes only
-//            color: { type: Uint8Array, value: (prop, id, extruded) => { return new THREE.Color(extruded ? 0xff8888 : 0xffffff);}, itemSize:3, normalized:true },
+            color: { type: Uint8Array, value: (prop, id, extruded) => { return new THREE.Color(extruded ? 0xffffff : 0x888888);}, itemSize:3, normalized:true },
             zbottom: { type: Float32Array, value: altitudeBuildings },
             id: { type: Uint32Array, value: (prop, id) => { return id;} }
         },
@@ -119,7 +138,7 @@ let bati = {
         projection: 'EPSG:4326',
         ipr: 'IGN',
         format: 'application/json',
-        zoom: { min: 14, max: 14 },
+        zoom: { min: 16, max: 16 },  // Beware that showing building at smaller zoom than ~16 create some holes as the WFS service can't answer more than n polylines per request
         // extent: {
         //     west: 4.568,
         //     east: 5.18,

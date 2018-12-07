@@ -1,5 +1,6 @@
 import * as itowns from 'itowns'
 import GuiTools from './gui/GuiTools'
+import dat from 'dat.gui';
 
 import binarySearch from './utils/search'
 import { createLinks } from './utils/scenario'
@@ -91,7 +92,7 @@ globeView.addLayer(iso_5_config);
 /*************************************** WATER A.D ***********************************************/
 // Here we create the Tile geometry for the water using a globe with specific vertex displacement
 let object3d = new THREE.Object3D();
-let segments = 128;
+let segments = 64;
 const globeWater = itowns.createGlobeLayer('globeWater', { object3d, segments });
 globeWater.disableSkirt = true;
 globeWater.opacity = 0.999; // So we can handle transparency check for nice shading
@@ -134,7 +135,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     menuGlobe.addImageryLayersGUI(globeView.getLayers(l => l.type === 'color'));
     menuGlobe.addGeometryLayersGUI(globeView.getLayers(l => l.type === 'geometry' && l.id != 'globe'));
 
-    menuGlobe.gui.add({ waterLevel: 0.1 }, 'waterLevel').min(0.1).max(6).onChange((
+    menuGlobe.gui.add({ HauteurdEau: 0.1 }, 'HauteurdEau').min(0.1).max(6).onChange((
         function updateWaterLevel(value) {
             adjustAltitude(value);
             adjustBuildingColors(value);
@@ -142,11 +143,34 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             globeView.notifyChange(true);
         }));
 
+    menuGlobe.gui.add({ Niveaux: false}, 'Niveaux').onChange(function updateWaterLevel(value) {
+        setMode(value ? 1 : 0);
+        var legende = document.getElementById("batchLegende");
+        console.log(legende);
+        legende.style = value ? "visibility: visible" : "visibility: hidden";
+    });
+
+    menuGlobe.gui.add({ Abstraction: true}, 'Abstraction').onChange(function updateWaterLevel(value) {
+        var layer = globeView.getLayers(l => l.id === 'DARK')[0];
+        layer.opacity = value ? 1 : 0;
+        globeView.notifyChange(layer);
+    });
+
+    menuGlobe.gui.add({ TransparenceEau: false}, 'TransparenceEau').onChange(function updateWaterLevel(value) {
+        console.log(globeView);
+        globeWater.opacity = value ?  0.6: 0.9999;
+        globeView.notifyChange();
+    });
+
+    //createLegend();
+
+    /*    
     menuGlobe.gui.add({ mode: 0 }, 'mode').min(0).max(3).step(1).onChange((
         function updateWaterMode(value) {
             setMode(value);
         }
     ));
+    */
 
     adjustAltitude(0.1);
     animateLines();
@@ -154,6 +178,27 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     console.log('links');
 });
 
+
+function createLegend(){
+    var Col = function() {
+
+        this.color0 = "#ffae23"; // CSS string
+        this.color1 = [ 0, 128, 255 ]; // RGB array
+        this.color2 = [ 0, 128, 255, 0.3 ]; // RGB with alpha
+        this.color3 = { h: 350, s: 0.9, v: 0.3 }; // Hue, saturation, value
+
+      };
+      
+     // window.onload = function() {
+        var text = new Col();
+        var gui = new dat.GUI();
+      
+        gui.addColor(text, 'color0');
+        gui.addColor(text, 'color1');
+        gui.addColor(text, 'color2');
+        gui.addColor(text, 'color3');
+     // };
+}
 
 // from itowns examples, can't say I really understand what is going on...
 function picking(event) {
