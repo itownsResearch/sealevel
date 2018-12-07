@@ -52,18 +52,18 @@ void main(){
         return;
     }
     if (waterLevel - zbot > 3.0){
-        gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
         return;
     }
     else if (waterLevel - zbot > 2.0){
-        gl_FragColor = vec4(1.0, 0.2, 0.1, 1.0);
+        gl_FragColor = vec4(1.0, 1., 0.1, 1.0);
         return;
     }
     else if (waterLevel - zbot > 0.0){
         gl_FragColor = vec4(0.8, 0.7, 0.0, 1.0);
         return;
     }
-    gl_FragColor = vec4(0.3, 0.3, 0.5, 1.0);
+    gl_FragColor = vec4(0.0, 0.9, 0.1, 1.0);
 }
 `;
 
@@ -77,7 +77,7 @@ function extrudeBuildings(properties) {
 }
 
 function altitudeBuildings(properties) {
-    return properties.z_min - properties.hauteur;
+    return properties.z_max - properties.hauteur;
 }
 
 //const nivEau = 20

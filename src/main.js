@@ -31,6 +31,8 @@ coords = { lon: -1.563, lat: 46.256, deltaLon: 0.300, deltaLat: -0.150 };
 
 const viewerDiv = document.getElementById('viewerDiv');
 const htmlInfo = document.getElementById('info');
+const boardInfo = document.getElementById('boardSpace');
+
 // Options for segments in particular is not well handled
 // We modified some code in itowns and created an issue https://github.com/iTowns/itowns/issues/910
 let options = { segments: 128 }; // We specify a more refined tile geomtry than default 16*16
@@ -140,6 +142,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             adjustAltitude(value);
             adjustBuildingColors(value);
             setLinesVisibility(lines, value);
+            changeBoardInfos(value);
             globeView.notifyChange(true);
         }));
 
@@ -178,7 +181,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     console.log('links');
 });
 
-
+/*
 function createLegend(){
     var Col = function() {
 
@@ -199,6 +202,7 @@ function createLegend(){
         gui.addColor(text, 'color3');
      // };
 }
+*/
 
 // from itowns examples, can't say I really understand what is going on...
 function picking(event) {
@@ -232,6 +236,31 @@ function picking(event) {
             }
         }
     }
+}
+
+let legends = [];
+legends.push(document.getElementById('greenlegend'));
+legends.push(document.getElementById('yellowlegend'));
+legends.push(document.getElementById('orangelegend'));
+legends.push(document.getElementById('redlegend'));
+
+function changeBoardInfos(value) {
+    boardInfo.innerHTML = '';
+    let cl = 'bewareNiet';
+    legends.forEach(element => { element.className = 'legend'; });
+    if (value <= 0.7 ){
+        legends[0].className = cl;
+    } else if (value >= 0.8 && value <= 2) {
+        cl = 'bewareYellow';
+        legends[1].className = cl;
+    } else if (value > 2 && value <= 3) {
+        cl = 'bewareOrange';
+        legends[2].className = cl;
+    } else if (value > 3) {
+        cl = 'beware';
+        legends[3].className = cl;
+    }
+    //boardInfo.innerHTML += niv;
 }
 
 function animateLines() {

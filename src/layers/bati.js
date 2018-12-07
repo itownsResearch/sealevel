@@ -8,8 +8,10 @@ function createMaterial(vShader, fShader) {
         opacity: {type: 'f', value: 1.0},
         z0: {type: 'f', value: 0.0},
         z1: {type: 'f', value: 2.0},
-        color0: {type: 'c', value: new THREE.Color(0x888888)},
-        color1: {type: 'c', value: new THREE.Color(0x4444ff)},
+        //color0: {type: 'c', value: new THREE.Color(0x888888)},
+        color0: {type: 'c', value: new THREE.Color(0x006600)},
+        color1: {type: 'c', value: new THREE.Color(0xbb0000)},
+        //color1: {type: 'c', value: new THREE.Color(0x4444ff)},
     };
 
     let meshMaterial = new THREE.ShaderMaterial({
@@ -41,16 +43,6 @@ void main(){
     float t = smoothstep(z0, z1, waterLevel-zbottom); // zbottom+z0 -> 0, zbottom+z1 -> 1
     v_color = vec4(mix(color0, color1, t), opacity);
     v_color.rgb *= color.r * 2.;
-   // float modHeight = mod(length(modelMatrix * vec4(position, 1.0)), 2.);
- //   v_height = modHeight;
-    /*
-        vec3 l = vec3(1.,0.,0.);  // 
-        float cosTheta = clamp( dot( normal,l ), 0., 1. );
-        vec4 lightColor = vec4(1.,0.,0.,1.);
-        v_color = vec4(normal, 1.); //lightColor * cosTheta;
-    */
-    // v_color.rgb += clamp(modHeight / 2., 0., 1.0) / 10.;
-    // v_color.a = 1.;
     #include <logdepthbuf_vertex>
 }
 `;
@@ -69,10 +61,8 @@ void main(){
 let resultoss;
 let shadMat = createMaterial(vertexShader, fragmentShader);
 function addShader(result){
-    result.geometry.computeVertexNormals();
-    result.geometry.computeFaceNormals();
+    
     result.material = shadMat;
-    result.material.side= THREE.DoubleSide;
     //console.log("result ", result)
     resultoss = result;
     // let k = 0;
