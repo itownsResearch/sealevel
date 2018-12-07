@@ -202,9 +202,9 @@ void main() {
         gl_FragColor.rgb = mix(shallow, deep, min(waterHeight / 6., 1.));
 
         if(mode>0){
-            if(waterHeight > 3.) gl_FragColor.r += 0.6;
+            if(waterHeight > 2.) gl_FragColor.r += 0.6;
             else
-                if(waterHeight > 1.5) gl_FragColor.r += 0.3;
+                if(waterHeight > 1.) gl_FragColor.r += 0.3;
         }
 
       //  gl_FragColor.rgb = vec3(0.02745, 0.2666, 0.2784);
