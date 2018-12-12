@@ -20,7 +20,22 @@ let scenario = {
         { from: buildings['mairie_1'], to: buildings['mairie_2'], hauteur_dysf: 3 },
         //ugly hack ?
         { from: buildings['mairie_1'], to: buildings['mairie_3'], hauteur_dysf: 99 },
-    ]
+    ],
+
+    //the keys are the iris code
+    communes: {
+        17286: { hauteur_dysf: 3 },
+        17318: { hauteur_dysf: 3 },
+        17019: { hauteur_dysf: 3 },
+        17207: { hauteur_dysf: 3 },
+        17121: { hauteur_dysf: 3 },
+        17051: { hauteur_dysf: 5 },
+        17161: { hauteur_dysf: 6 },
+        17360: { hauteur_dysf: 5 },
+        17297: { hauteur_dysf: 5 },
+        17369: { hauteur_dysf: 6 },
+
+    }
 };
 
 export default scenario

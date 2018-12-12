@@ -1,6 +1,6 @@
 import * as itowns from 'itowns'
 import GuiTools from './gui/GuiTools'
-import dat from 'dat.gui';
+import {ToolTip} from './utils/FeatureToolTip'
 
 import binarySearch from './utils/search'
 import { createLinks } from './utils/scenario'
@@ -17,7 +17,6 @@ import Slopes from './layers/slopesImage'
 import {iso_1_config, iso_5_config} from './layers/isolines'
 
 import WORLD_DTM from './layers/WORLD_DTM'
-
 import { bati, shadMat } from './layers/bati'
 import { batiRem, shadMatRem } from './layers/bati_remarquable'
 
@@ -91,6 +90,34 @@ globeView.addLayer(batiRem);
 globeView.addLayer(iso_1_config);
 globeView.addLayer(iso_5_config);
 
+const irisLayer = {
+    type: 'color',
+    id: 'iris',
+    name: 'iris',
+    transparent: true,
+    style: {
+        fill: 'orange',
+        fillOpacity: 0.01,
+        stroke: 'white',
+    },
+    source: {
+        url: '../data/iris.geojson',
+        protocol: 'file',
+        projection: 'EPSG:4326',
+    },
+    visible: false
+};
+
+globeView.addLayer(irisLayer);
+// Create the source
+//const tmsSource = new itowns.TMSSource(iso_4);
+
+// const colorLayer = new itowns.ColorLayer('iso_4', {
+//     source: tmsSource,
+// });
+
+//globeView.addLayer(iso_4)
+
 /*************************************** WATER A.D ***********************************************/
 // Here we create the Tile geometry for the water using a globe with specific vertex displacement
 let object3d = new THREE.Object3D();
@@ -129,6 +156,7 @@ itowns.Fetcher.json('./layers/JSONLayers/OPENSM.json').then(function _(osm) {
 /**************************************************************************************************/
 
 let time = 0;
+let currentWaterLevel = { val: 0 };
 globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     globeView.controls.minDistance = 50;  // Allows the camera to get closer to the ground
     console.log('globe initialized ?', globeView);
@@ -143,6 +171,7 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
             adjustBuildingColors(value);
             setLinesVisibility(lines, value);
             changeBoardInfos(value);
+            currentWaterLevel.val = value;
             globeView.notifyChange(true);
         }));
 
@@ -175,10 +204,10 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     ));
     */
 
+    let t = new ToolTip(globeView, document.getElementById('tooltipDiv'), currentWaterLevel, scenario);
     adjustAltitude(0.1);
     animateLines();
     window.addEventListener('click', picking, false);
-    console.log('links');
 });
 
 /*
@@ -250,16 +279,17 @@ function changeBoardInfos(value) {
     legends.forEach(element => { element.className = 'legend'; });
     if (value <= 0.7 ){
         legends[0].className = cl;
-    } else if (value >= 0.8 && value <= 2) {
+    } else if (0.8 <= value && value <= 2) {
         cl = 'bewareYellow';
         legends[1].className = cl;
-    } else if (value > 2 && value <= 3) {
+    } else if (2 < value && value <= 3) {
         cl = 'bewareOrange';
         legends[2].className = cl;
     } else if (value > 3) {
         cl = 'beware';
         legends[3].className = cl;
     }
+    //document.getElementsByClassName("toolz")[0].setAttribute('color', 'red')
     //boardInfo.innerHTML += niv;
 }
 
@@ -272,3 +302,4 @@ function animateLines() {
     globeView.notifyChange(true);
     requestAnimationFrame(animateLines);
 };
+
