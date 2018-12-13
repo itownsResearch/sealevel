@@ -289,8 +289,6 @@ function changeBoardInfos(value) {
         cl = 'beware';
         legends[3].className = cl;
     }
-    //document.getElementsByClassName("toolz")[0].setAttribute('color', 'red')
-    //boardInfo.innerHTML += niv;
 }
 
 function animateLines() {

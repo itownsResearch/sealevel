@@ -12,7 +12,7 @@ let bati_raster ={
     //linewidth: 15,
     //isValidData: (p) => { console.log(p.properties) ; return true },//isValidData,
     source: {
-        url: 'http://wxs.ign.fr/3ht7xcw6f7nciopo16etuqp2/geoportail/wfs?',
+        url: 'https://wxs.ign.fr/3ht7xcw6f7nciopo16etuqp2/geoportail/wfs?',
         protocol: 'wfs',
         version: '2.0.0',
         typeName: 'BDTOPO_BDD_WLD_WGS84G:bati_remarquable,BDTOPO_BDD_WLD_WGS84G:bati_indifferencie,BDTOPO_BDD_WLD_WGS84G:bati_industriel',
