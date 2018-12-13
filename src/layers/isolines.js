@@ -10,7 +10,7 @@ export const iso_1_config = {
         stroke: 'yellow',
     },
     source: {
-        url: '../../data/iso_alti_1.geojson',
+        url: 'data/iso_alti_1.geojson',
         protocol: 'file',
         projection: 'EPSG:4326',
     },
@@ -29,7 +29,7 @@ export const iso_5_config = {
         'stroke-width': 0.2
     },
     source: {
-        url: '../../data/iso_alti_5.geojson',
+        url: 'data/iso_alti_5.geojson',
         protocol: 'file',
         projection: 'EPSG:4326',
     },
