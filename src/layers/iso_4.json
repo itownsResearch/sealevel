@@ -1,0 +1,19 @@
+{
+    "type": "color",
+    "id": "iso_4",
+    "source": {
+        "protocol": "tms",
+	    "networkOptions": { "crossOrigin" : "anonymous" },
+        "format": "image/png",
+        "url": "../../data/iso_4/${z}/${x}/-${y}.png",
+    	"attribution": {
+    		"name":"CARTO",
+    		"url": "https://carto.com/"
+    	},
+        "tileMatrixSet": "PM"
+    },
+    "zoom" : {
+        "min": 0,
+        "max": 5
+    }
+}
