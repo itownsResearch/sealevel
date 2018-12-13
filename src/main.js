@@ -101,7 +101,7 @@ const irisLayer = {
         stroke: 'white',
     },
     source: {
-        url: './data/iris.geojson',
+        url: 'data/iris.geojson',
         protocol: 'file',
         projection: 'EPSG:4326',
     },
