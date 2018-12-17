@@ -15,7 +15,8 @@ import DARK from './layers/DARK'
 import Ortho from './layers/Ortho'
 import Slopes from './layers/slopesImage'
 import {iso_1_config, iso_5_config} from './layers/isolines'
-
+import iso_1 from './layers/iso_1'
+import iso_5 from './layers/iso_5'
 import WORLD_DTM from './layers/WORLD_DTM'
 import { bati, shadMat } from './layers/bati'
 import { batiRem, shadMatRem } from './layers/bati_remarquable'
@@ -87,8 +88,10 @@ globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
 globeView.addLayer(bati);
 globeView.addLayer(batiRem);
-globeView.addLayer(iso_1_config);
-globeView.addLayer(iso_5_config);
+globeView.addLayer(iso_1)
+globeView.addLayer(iso_5)
+//globeView.addLayer(iso_1_config);
+//globeView.addLayer(iso_5_config);
 
 const irisLayer = {
     type: 'color',
@@ -109,14 +112,13 @@ const irisLayer = {
 };
 
 globeView.addLayer(irisLayer);
-// Create the source
-//const tmsSource = new itowns.TMSSource(iso_4);
+//Create the source
+// const tmsSource = new itowns.TMSSource(iso_4);
 
 // const colorLayer = new itowns.ColorLayer('iso_4', {
 //     source: tmsSource,
 // });
 
-//globeView.addLayer(iso_4)
 
 /*************************************** WATER A.D ***********************************************/
 // Here we create the Tile geometry for the water using a globe with specific vertex displacement
