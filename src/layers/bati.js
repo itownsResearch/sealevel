@@ -8,8 +8,8 @@ function createMaterial(vShader, fShader) {
         opacity: {type: 'f', value: 1.0},
         z0: {type: 'f', value: 0.0},
         z1: {type: 'f', value: 2.0},
-        //color0: {type: 'c', value: new THREE.Color(0x888888)},
-        color0: {type: 'c', value: new THREE.Color(0x006600)},
+        color0: {type: 'c', value: new THREE.Color(0x505050)},
+        //color0: {type: 'c', value: new THREE.Color(0x006600)},
         color1: {type: 'c', value: new THREE.Color(0xbb0000)},
         //color1: {type: 'c', value: new THREE.Color(0x4444ff)},
     };
@@ -79,7 +79,8 @@ function extrudeBuildings(properties) {
 }
 
 function altitudeBuildings(properties) {
-    return properties.z_max - properties.hauteur;
+    //return properties.z_max - properties.hauteur;
+    return - properties.hauteur;
 }
 
 //const nivEau = 20
@@ -108,7 +109,8 @@ let bati = {
         extrude: extrudeBuildings,
         attributes: { // works for extruded meshes only
             color: { type: Uint8Array, value: (prop, id, extruded) => { return new THREE.Color(extruded ? 0xffffff : 0x888888);}, itemSize:3, normalized:true },
-            zbottom: { type: Float32Array, value: altitudeBuildings },
+            zbottom: { type: Float32Array, value: (properties) => properties.z_max - properties.hauteur }, 
+            //zbottom: { type: Float32Array, value: altitudeBuildings }
             id: { type: Uint32Array, value: (prop, id) => { return id;} }
         },
     }),

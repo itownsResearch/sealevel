@@ -40,11 +40,11 @@ const globeView = new itowns.GlobeView(viewerDiv, positionOnGlobe, options);
 const menuGlobe = new GuiTools('menuDiv', globeView)
 
 // I have to call it twice to make it works, even if i destroy the result immediately, don't ask why..
-let liness = createLinks(scenario);
-liness = null;
+// let liness = createLinks(scenario);
+// liness = null;
 // the last line described in the json is just added to make it work, we won't add it to the scene, strange hack..
-const lines = createLinks(scenario);
-lines.pop();
+// const lines = createLinks(scenario);
+// lines.pop();
 
 function addtoscene(lines){
     for (let i = 0; i < lines.length; ++i) {
@@ -57,7 +57,7 @@ function adjustAltitude(value) {
     var displacement = value;
     globeView.setDisplacementZ(displacement);
     globeView.notifyChange();
-    console.log(displacement);
+    //console.log(displacement);
 
 }
 
@@ -87,7 +87,7 @@ globeView.addLayer(DARK);
 globeView.addLayer(WORLD_DTM);
 globeView.addLayer(IGN_MNT_HR);
 globeView.addLayer(bati);
-globeView.addLayer(batiRem);
+//globeView.addLayer(batiRem);
 globeView.addLayer(iso_1)
 globeView.addLayer(iso_5)
 //globeView.addLayer(iso_1_config);
@@ -162,7 +162,7 @@ let currentWaterLevel = { val: 0 };
 globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     globeView.controls.minDistance = 50;  // Allows the camera to get closer to the ground
     console.log('globe initialized ?', globeView);
-    addtoscene(lines);
+    //addtoscene(lines);
 
     menuGlobe.addImageryLayersGUI(globeView.getLayers(l => l.type === 'color'));
     menuGlobe.addGeometryLayersGUI(globeView.getLayers(l => l.type === 'geometry' && l.id != 'globe'));
@@ -171,17 +171,17 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
         function updateWaterLevel(value) {
             adjustAltitude(value);
             adjustBuildingColors(value);
-            setLinesVisibility(lines, value);
-            changeBoardInfos(value);
+            //setLinesVisibility(lines, value);
+            //changeBoardInfos(value);
             currentWaterLevel.val = value;
             globeView.notifyChange(true);
         }));
 
     menuGlobe.gui.add({ Niveaux: false}, 'Niveaux').onChange(function updateWaterLevel(value) {
         setMode(value ? 1 : 0);
-        var legende = document.getElementById("batchLegende");
-        console.log(legende);
-        legende.style = value ? "visibility: visible" : "visibility: hidden";
+        //var legende = document.getElementById("batchLegende");
+        //console.log(legende);
+        //legende.style = value ? "visibility: visible" : "visibility: hidden";
     });
 
     menuGlobe.gui.add({ Abstraction: true}, 'Abstraction').onChange(function updateWaterLevel(value) {
@@ -190,11 +190,23 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
         globeView.notifyChange(layer);
     });
 
-    menuGlobe.gui.add({ TransparenceEau: false}, 'TransparenceEau').onChange(function updateWaterLevel(value) {
-        console.log(globeView);
-        globeWater.opacity = value ?  0.6: 0.9999;
-        globeView.notifyChange();
+    menuGlobe.gui.add({ LegendeNiveaux: false}, 'LegendeNiveaux').onChange(function setlegendNiv(value) {
+        var legende = document.getElementById("batchLegende");
+        //console.log(legende);
+        legende.style = value ? "visibility: visible" : "visibility: hidden";
     });
+
+    // menuGlobe.gui.add({ TransparenceEau: false}, 'TransparenceEau').onChange(function updateWaterLevel(value) {
+    //     console.log(globeView);
+    //     globeWater.opacity = value ?  0.6: 0.9999;
+    //     globeView.notifyChange();
+    // });
+
+    menuGlobe.gui.add({ TransparenceEau: 1.0 }, 'TransparenceEau').min(0.1).max(0.99).step(0.05).onChange(
+        function updateWaterLevel(value) {
+            globeWater.opacity = value;
+            globeView.notifyChange(true);
+        });
 
     //createLegend();
 
@@ -206,9 +218,10 @@ globeView.addEventListener(itowns.GLOBE_VIEW_EVENTS.GLOBE_INITIALIZED, () => {
     ));
     */
 
-    let t = new ToolTip(globeView, document.getElementById('tooltipDiv'), currentWaterLevel, scenario);
+    //tooltip with iris informations
+    //let t = new ToolTip(globeView, document.getElementById('tooltipDiv'), currentWaterLevel, scenario);
     adjustAltitude(0.1);
-    animateLines();
+    //animateLines();
     window.addEventListener('click', picking, false);
 });
 
@@ -239,7 +252,8 @@ function createLegend(){
 function picking(event) {
     if (globeView.controls.isPaused()) {
         //var htmlInfo = document.getElementById('info');
-        var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings Remarquable');
+        //var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings Remarquable');
+        var intersects = globeView.pickObjectsAt(event, 10, 'WFS Buildings');
         var properties;
         var info;
         htmlInfo.innerHTML = ' ';
